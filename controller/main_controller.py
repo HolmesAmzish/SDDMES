@@ -1,11 +1,12 @@
 import os
+import sys
 from queue import Queue
 import cv2
 import numpy as np
 import torch
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
 from PyQt6.QtCore import QTimer
 from PyQt6.QtMultimedia import QMediaPlayer
 from PyQt6.QtMultimediaWidgets import QVideoWidget
@@ -13,6 +14,7 @@ from view.main_ui import Ui_MainWindow
 from utilis.database import DatabaseHelper, DetectResult, DetectObj
 from controller.figure_process_worker import FigureProcessWorker
 from controller.video_process_worker import VideoProcessWorker
+from controller.history_controller import HistoryDialog
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -29,66 +31,112 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Initialize database
-        self.conn = DatabaseHelper(
-            host='192.168.0.190',
-            user='cacc',
-            password='20230612',
-            database='steel_defect',
-        )
+        self.conn = DatabaseHelper(host='192.168.0.190', user='cacc', password='20230612')
+        
 
         # Maintain a queue to be detected and a list for saving results
+        self.chosen_video = None  # Chosen video to be detected
         self.detect_queue = Queue()  # Figure queue to be detected
         self.result_list = []  # List to store detection result of figures
-        self.chosen_video = None  # Chosen video to be detected
+        self.timer = QTimer(self)
 
-        self.result_video = []
+        # Figures detection operation group btn
+        self.figure_btn.clicked.connect(self.browse_image)
+        self.add_figure_btn.clicked.connect(self.add_figure)
+        self.folder_btn.clicked.connect(self.browse_folder)
+        self.add_folder_btn.clicked.connect(self.add_figure_folder)
 
-        # Connect slot and btn
-        self.figure_btn.clicked.connect(self.select_image)
-        self.folder_btn.clicked.connect(self.select_folder)
         self.run_btn.clicked.connect(self.start_detection)
-        self.save_btn.clicked.connect(self.save_result_to_db)
+        self.save_all_btn.clicked.connect(self.save_all_to_db)
+        self.check_db_btn.clicked.connect(self.show_history_dialog)
+
+        # Video detection operation group btn
         self.video_browse_btn.clicked.connect(self.select_video)
         self.video_detect_btn.clicked.connect(self.start_video_detection)
-
-        self.timer = QTimer(self)
-        # Connect buttons to actions
         self.play_btn.clicked.connect(self.play_video)
 
+
     """
+    Single Figure Process Tab
     Steel Defect Detection by images
     Choose single figure or the folder of figure and detect
     """
-    def select_image(self):
+    def browse_image(self):
         file_path, _ = QFileDialog.getOpenFileName(None, "选择图片文件", "", 'Images (*.png *.jpg *.jpeg *.xpm)')
         if file_path:
             figure_name = os.path.basename(file_path)
-            figure = open(file_path, "rb").read()
-            detect_obj = DetectObj(figure_name, figure, file_path)
-            self.enqueue_figure(detect_obj)
             self.figure_label.setText(figure_name)
-
+            self.figure_path_edit.setText(file_path)
         else:
-            print("文件路径错误！")
+            self.console.append(f"添加未找到文件: {file_path}")
 
-    def select_folder(self):
+    def add_figure(self):
+        figure_path = self.figure_path_edit.text().strip()
+
+        if not figure_path:
+            self.console.append("错误：未选择文件！")
+            return
+
+        if not os.path.isfile(figure_path):
+            self.console.append(f"错误：文件不存在 -> {figure_path}")
+            return
+
+        try:
+            with open(figure_path, "rb") as f:
+                figure = f.read()
+            detect_obj = DetectObj(os.path.basename(figure_path), figure, figure_path)
+            self.enqueue_figure(detect_obj)
+            self.console.append(f"成功添加文件: {figure_path}")
+        except Exception as e:
+            self.console.append(f"错误：读取文件失败 -> {str(e)}")
+
+    def browse_folder(self):
         """Add all detect objects in specific folder into detect_queue"""
         file_path = QFileDialog.getExistingDirectory(None, "选择图片文件夹")
         if file_path:
             self.folder_label.setText(os.path.basename(file_path))
-            for filename in os.listdir(file_path):
-                if filename.endswith((".jpg", ".png", ".jpeg", ".xpm")):
-                    full_path = os.path.join(file_path, filename)
-                    figure = open(full_path, "rb").read()
+            self.folder_path_edit.setText(file_path)
+        else:
+            self.console.append(f"添加未找到文件夹: {file_path}")
+
+    def add_figure_folder(self):
+        folder_path = self.folder_path_edit.text().strip()
+
+        if not folder_path:
+            self.console.append("错误：未选择文件夹！")
+            return
+
+        if not os.path.isdir(folder_path):
+            self.console.append(f"错误：文件夹不存在 -> {folder_path}")
+            return
+
+        added_files = 0
+        for filename in os.listdir(folder_path):
+            if filename.lower().endswith((".jpg", ".png", ".jpeg", ".xpm")):
+                full_path = os.path.join(folder_path, filename)
+
+                try:
+                    with open(full_path, "rb") as f:
+                        figure = f.read()
                     detect_obj = DetectObj(filename, figure, full_path)
                     self.enqueue_figure(detect_obj)
+                    added_files += 1
+                except Exception as e:
+                    self.console.append(f"错误：读取文件失败 -> {filename}: {str(e)}")
+
+        if added_files > 0:
+            self.console.append(f"成功添加 {added_files} 张图片")
         else:
-            print("文件夹路径错误！")
+            self.console.append("错误：未找到符合格式的图片文件")
 
     def start_detection(self):
         self.detection_worker = FigureProcessWorker(self.detect_queue, self.class_model, self.seg_model)
         self.detection_worker.result_signal.connect(self.handle_result)
         self.detection_worker.start()
+
+    def show_history_dialog(self):
+        history_dialog = HistoryDialog(self.conn)
+        history_dialog.exec()
 
     def handle_result(self, result):
         self.result_list.append(result)
@@ -96,29 +144,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.show_info(result)
         self.insert_result_to_table(result)
 
-
     def enqueue_figure(self, detect_obj):
         """Push object to detect into queue"""
         self.detect_queue.put(detect_obj)
         self.detect_list.addItem(detect_obj.name)
 
     def insert_result_to_table(self, result):
+        """Insert detect result to table view"""
         row_position = self.result_table.rowCount()
         self.result_table.insertRow(row_position)
-
         self.result_table.setItem(row_position, 0, QTableWidgetItem(result.name))
         self.result_table.setItem(row_position, 1, QTableWidgetItem(result.label))
         self.result_table.setItem(row_position, 2, QTableWidgetItem(str(result.num)))
         self.result_table.setItem(row_position, 3, QTableWidgetItem(result.time))
-
         self.result_table.itemClicked.connect(self.show_item_info)
 
     def show_item_info(self, item):
+        """Show item info of table"""
         row = item.row()
         self.show_info(self.result_list[row])
 
-    def save_result_to_db(self):
-        """TODO: Check duplicate"""
+    def save_all_to_db(self):
         for result in self.result_list:
             self.conn.save_result(result)
         print("所有记录已插入数据库。")
@@ -134,6 +180,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.result_label.setPixmap(pixmap)
 
     """
+    Video Process Tab
     Steel Defect Detection by videos and camera
     Choose video and camera captured frame to detect
     """
@@ -154,13 +201,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.video_thread.video_path_signal.connect(self.play_video)
             self.video_thread.start()
 
-    # def stop_video_detection(self):
-    #     """Stop video detection and release resources"""
-    #     if self.video_thread is not None:
-    #         self.video_thread.stop()
-    #         self.chosen_video.release()
-    #         print("视频处理已停止")
-
     def play_video(self, video_path):
         self.cap = cv2.VideoCapture(video_path)
         self.timer.timeout.connect(self.update_frame)
@@ -171,18 +211,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         ret, frame = self.cap.read()
 
         if ret:
-            # Convert the frame to RGB (OpenCV uses BGR by default)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # Convert the frame to QImage
             height, width, channels = frame_rgb.shape
             bytes_per_line = channels * width
             qimage = QImage(frame_rgb.data, width, height, bytes_per_line, QImage.Format.Format_RGB888)
 
-            # Convert QImage to QPixmap and set it to the QLabel
             pixmap = QPixmap.fromImage(qimage)
             self.video_display_label.setPixmap(pixmap)
         else:
-            # If no more frames, stop the video
             self.cap.release()
             self.timer.stop()
