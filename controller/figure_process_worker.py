@@ -28,7 +28,6 @@ class FigureProcessWorker(QThread):
 
             result = DetectResult(
                 name=detect_obj.name,
-                raw_fig=detect_obj.figure,
                 res_fig=res_fig,
                 date=datetime.now(),
                 time=f'{time_cost:.2f}',

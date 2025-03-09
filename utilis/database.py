@@ -39,7 +39,6 @@ class DatabaseHelper:
             CREATE TABLE IF NOT EXISTS res (
                 fig_id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                raw_fig MEDIUMBLOB NOT NULL,
                 res_fig MEDIUMBLOB NOT NULL,
                 date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 time VARCHAR(255) NOT NULL,
@@ -58,11 +57,11 @@ class DatabaseHelper:
     def save_result(self, result):
         """Insert result to database."""
         insert_query = """
-        INSERT INTO res (name, raw_fig, res_fig, date, time, label, num, dice)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO res (name, res_fig, date, time, label, num, dice)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         # Unpack result properties into a tuple
-        result_data = (result.name, result.raw_fig, result.res_fig, result.date, result.time, result.label, result.num, result.dice)
+        result_data = (result.name, result.res_fig, result.date, result.time, result.label, result.num, result.dice)
         self.cursor.execute(insert_query, result_data)
         self.conn.commit()
 
@@ -82,7 +81,7 @@ class DatabaseHelper:
         self.cursor.execute(fetch_query)
         rows = self.cursor.fetchall()
     
-        results = [DetectResult(*row) for row in rows]
+        results = [DetectResult.from_db_row(*row) for row in rows]
         return results
 
     def truncate_database(self):
@@ -98,15 +97,20 @@ class DatabaseHelper:
 
 
 class DetectResult:
-    def __init__(self, name, raw_fig, res_fig, date, time, label, num, dice):
+    def __init__(self, name, res_fig, date, time, label, num, dice, fig_id=None):
         self.name = name
-        self.raw_fig = raw_fig
         self.res_fig = res_fig
         self.date = date
         self.time = time
         self.label = label
         self.num = num
         self.dice = dice
+        self.fig_id = fig_id
+
+    @classmethod
+    def from_db_row(cls, fig_id, name, res_fig, date, time, label, num, dice):
+        """Create DetectResult from database row where fig_id is first"""
+        return cls(name, res_fig, date, time, label, num, dice, fig_id)
 
 
 class DetectObj:
@@ -114,3 +118,10 @@ class DetectObj:
         self.name = name
         self.figure = figure
         self.path = path
+
+defect_dict = {
+    0: "夹杂物",
+    1: "补丁",
+    2: "划痕",
+    3: "其他",
+}

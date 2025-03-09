@@ -53,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Video detection operation group btn
         self.video_browse_btn.clicked.connect(self.select_video)
         self.video_detect_btn.clicked.connect(self.start_video_detection)
-        self.play_btn.clicked.connect(self.play_video)
+        self.play_origin_btn.clicked.connect(self.play_video)
 
 
     """
@@ -136,7 +136,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_history_dialog(self):
         history_dialog = HistoryDialog(self.conn)
+        # Connect the signal to handle selected results
+        history_dialog.results_selected.connect(self.handle_history_results)
         history_dialog.exec()
+
+    def handle_history_results(self, results):
+        """Handle the results selected from history dialog"""
+        for result in results:
+            # Add the result to the result list
+            self.result_list.append(result)
+            # Insert the result into the table
+            self.insert_result_to_table(result)
+            # Show the result info
+            self.show_info(result)
 
     def handle_result(self, result):
         self.result_list.append(result)
