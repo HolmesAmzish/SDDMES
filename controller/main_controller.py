@@ -31,7 +31,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Initialize database
-        self.conn = DatabaseHelper(host='192.168.0.190', user='cacc', password='20230612')
+        self.conn = DatabaseHelper(host='localhost', user='cacc', password='20230612')
         
 
         # Maintain a queue to be detected and a list for saving results
@@ -39,6 +39,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.detect_queue = Queue()  # Figure queue to be detected
         self.result_list = []  # List to store detection result of figures
         self.timer = QTimer(self)
+        self.file_path = ''
 
         # Figures detection operation group btn
         self.figure_btn.clicked.connect(self.browse_image)
@@ -53,7 +54,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Video detection operation group btn
         self.video_browse_btn.clicked.connect(self.select_video)
         self.video_detect_btn.clicked.connect(self.start_video_detection)
-        self.play_origin_btn.clicked.connect(self.play_video)
+        self.play_origin_btn.clicked.connect(self.play_origin_video)
+        self.play_detected_btn.clicked.connect(self.play_detected_video)
 
 
     """
@@ -184,7 +186,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def show_info(self, result):
         """TODO: Show the information of specific record in result_table"""
         self.class_label.setText(result.label)
-        self.dice_label.setText(result.dice)
+        self.dice_label.setText(result.dice.replace('[', '').replace(']', ''))
 
         # Show result figure
         pixmap = QtGui.QPixmap()
@@ -198,10 +200,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
 
     def select_video(self):
-        file_path, _ = QFileDialog.getOpenFileName(None, "选择视频文件", "", 'Video files (*.mp4 *.avi)')
-        if file_path:
-            video_name = os.path.basename(file_path)
-            self.chosen_video = cv2.VideoCapture(file_path)
+        self.file_path, _ = QFileDialog.getOpenFileName(None, "选择视频文件", "", 'Video files (*.mp4 *.avi)')
+        if self.file_path:
+            video_name = os.path.basename(self.file_path)
+            self.chosen_video = cv2.VideoCapture(self.file_path)
             if not self.chosen_video.isOpened():
                 print("无法打开视频文件！")
                 return
@@ -209,12 +211,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def start_video_detection(self):
         """Start the video detection in a separate thread"""
         if self.chosen_video is not None:
+            self.video_processer_output.append("开始视频检测...")
             self.video_thread = VideoProcessWorker(self.chosen_video, self.class_model, self.seg_model)
-            self.video_thread.video_path_signal.connect(self.play_video)
+            self.video_thread.started.connect(lambda: self.video_processer_output.append("视频检测进行中..."))
+            self.video_thread.finished.connect(lambda: self.video_processer_output.append("视频检测完成。"))
             self.video_thread.start()
 
-    def play_video(self, video_path):
-        self.cap = cv2.VideoCapture(video_path)
+    def play_detected_video(self):
+        self.cap = cv2.VideoCapture("output.mp4")
+        if not self.cap.isOpened():
+            self.video_processer_output.append("无法打开检测后的视频文件！")
+            return
+        self.video_processer_output.append("播放检测后的视频...")
+        self.timer.timeout.connect(self.update_frame)
+        self.timer.start(1000 // 12)
+
+    def play_origin_video(self):
+        self.cap = cv2.VideoCapture(self.file_path)
+        if not self.cap.isOpened():
+            self.video_processer_output.append("无法打开原始视频文件！")
+            return
+        self.video_processer_output.append("播放原始视频...")
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(1000 // 24)
 

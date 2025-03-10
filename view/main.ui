@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="figure_tab">
        <attribute name="title">
@@ -49,7 +49,7 @@
          <property name="geometry">
           <rect>
            <x>20</x>
-           <y>20</y>
+           <y>30</y>
            <width>121</width>
            <height>41</height>
           </rect>
@@ -62,7 +62,7 @@
          <property name="geometry">
           <rect>
            <x>20</x>
-           <y>70</y>
+           <y>80</y>
            <width>121</width>
            <height>41</height>
           </rect>
@@ -75,7 +75,7 @@
          <property name="geometry">
           <rect>
            <x>20</x>
-           <y>120</y>
+           <y>130</y>
            <width>121</width>
            <height>41</height>
           </rect>
@@ -206,11 +206,16 @@
         <widget class="QLabel" name="dice_label">
          <property name="geometry">
           <rect>
-           <x>10</x>
+           <x>-10</x>
            <y>70</y>
-           <width>141</width>
+           <width>181</width>
            <height>41</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="text">
           <string/>
@@ -289,7 +294,7 @@
           <rect>
            <x>10</x>
            <y>100</y>
-           <width>101</width>
+           <width>111</width>
            <height>31</height>
           </rect>
          </property>
@@ -388,7 +393,7 @@
           <rect>
            <x>10</x>
            <y>20</y>
-           <width>81</width>
+           <width>241</width>
            <height>31</height>
           </rect>
          </property>
@@ -462,7 +467,7 @@
          <property name="geometry">
           <rect>
            <x>520</x>
-           <y>10</y>
+           <y>20</y>
            <width>271</width>
            <height>271</height>
           </rect>
@@ -490,10 +495,10 @@
        <widget class="QTextBrowser" name="console">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>801</width>
-          <height>511</height>
+          <x>0</x>
+          <y>0</y>
+          <width>811</width>
+          <height>521</height>
          </rect>
         </property>
        </widget>
@@ -509,7 +514,7 @@
      <x>0</x>
      <y>0</y>
      <width>852</width>
-     <height>18</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

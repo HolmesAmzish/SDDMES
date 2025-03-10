@@ -5,7 +5,7 @@ File: database.py
 Date: 2025-03-01
 """
 class DatabaseHelper:
-    def __init__(self, password, database="steel_defect", host="localhost", user="root", port=3306):
+    def __init__(self, password, database="steel_defect", host="localhost", user="cacc", port=3306):
         self.host = host
         self.user = user
         self.password = password

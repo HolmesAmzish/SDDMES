@@ -7,7 +7,7 @@ from utilis.eda import eda
 import torch
 
 class VideoProcessWorker(QThread):
-    video_signal = pyqtSignal(str)
+    # video_signal = pyqtSignal(str)
 
     def __init__(self, video_capture, class_model, seg_model, output_path="output.mp4"):
         super().__init__()
@@ -51,34 +51,30 @@ class VideoProcessWorker(QThread):
         if frames:
             self.save_video(frames, self.output_path)
 
-        # 发送信号，通知视频已保存
-        self.video_signal.emit(self.output_path)
+        # self.video_signal.emit(self.output_path)
 
     def save_video(self, frames, output_path, fps=24):
         """将帧列表保存为视频"""
 
-        # 如果没有帧数据，直接返回
         if not frames:
             return
 
-        # 解码第一帧来获取图像尺寸
-        nparr = np.frombuffer(frames[0], np.uint8)  # 将二进制数据转换为 NumPy 数组
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # 解码为图像
-        height, width, _ = frame.shape  # 获取图像的高、宽和通道数
-        shape = (width, height)  # 视频的尺寸是 (width, height)
+        nparr = np.frombuffer(frames[0], np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        height, width, _ = frame.shape
+        shape = (width, height)
 
-        # 设置视频编码格式
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        # Use 'mp4v' codec for mp4 format
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         video_writer = cv2.VideoWriter(output_path, fourcc, fps, shape)
 
         for frame_data in frames:
-            nparr = np.frombuffer(frame_data, np.uint8)  # 将二进制数据转换为 NumPy 数组
-            frame_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # 解码为图像
-            video_writer.write(frame_img)  # 将解码后的图像写入视频
-
+            nparr = np.frombuffer(frame_data, np.uint8)
+            frame_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            video_writer.write(frame_img)
         video_writer.release()
         cv2.destroyAllWindows()
 
     def stop(self):
         self.running = False
-        self.wait()  # 等待线程结束
+        self.wait()
