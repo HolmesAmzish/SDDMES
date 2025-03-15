@@ -12,6 +12,7 @@ from PyQt6.QtMultimedia import QMediaPlayer
 from PyQt6.QtMultimediaWidgets import QVideoWidget
 from view.main_ui import Ui_MainWindow
 from utilis.database import DatabaseHelper, DetectResult, DetectObj
+from utilis.defect_dict import translate_defects
 from controller.figure_process_worker import FigureProcessWorker
 from controller.video_process_worker import VideoProcessWorker
 from controller.history_controller import HistoryDialog
@@ -185,8 +186,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_info(self, result):
         """TODO: Show the information of specific record in result_table"""
-        self.class_label.setText(result.label)
-        self.dice_label.setText(result.dice.replace('[', '').replace(']', ''))
+        # self.console.append(f"{type(result.label)}")
+        defects = translate_defects(result.label)
+        self.class_label.setText("、".join(defects))
+        self.dice_label.setText(result.dice)
 
         # Show result figure
         pixmap = QtGui.QPixmap()

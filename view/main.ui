@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>852</width>
-    <height>564</height>
+    <width>874</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,6 +53,9 @@
            <width>121</width>
            <height>41</height>
           </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color:darkgreen; color:white</string>
          </property>
          <property name="text">
           <string>开始运行</string>
@@ -122,7 +125,7 @@
          <rect>
           <x>410</x>
           <y>120</y>
-          <width>401</width>
+          <width>411</width>
           <height>381</height>
          </rect>
         </property>
@@ -206,9 +209,9 @@
         <widget class="QLabel" name="dice_label">
          <property name="geometry">
           <rect>
-           <x>-10</x>
+           <x>10</x>
            <y>70</y>
-           <width>181</width>
+           <width>141</width>
            <height>41</height>
           </rect>
          </property>
@@ -381,7 +384,7 @@
          <rect>
           <x>10</x>
           <y>210</y>
-          <width>801</width>
+          <width>821</width>
           <height>291</height>
          </rect>
         </property>
@@ -468,7 +471,7 @@
           <rect>
            <x>520</x>
            <y>20</y>
-           <width>271</width>
+           <width>301</width>
            <height>271</height>
           </rect>
          </property>
@@ -497,7 +500,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>811</width>
+          <width>831</width>
           <height>521</height>
          </rect>
         </property>
@@ -513,7 +516,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>852</width>
+     <width>874</width>
      <height>22</height>
     </rect>
    </property>

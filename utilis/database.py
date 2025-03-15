@@ -118,10 +118,3 @@ class DetectObj:
         self.name = name
         self.figure = figure
         self.path = path
-
-defect_dict = {
-    0: "夹杂物",
-    1: "补丁",
-    2: "划痕",
-    3: "其他",
-}
