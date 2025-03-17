@@ -1,25 +1,17 @@
-<center>
-    <h1><img src="view/icon/sdd-logo.png" width="10%">   钢铁表面缺陷检测系统</h1>
-    <h3>Steel Surface Defect Detection System</h3>
-    <p align="center">
-        <img src="https://img.shields.io/badge/Python-3.8%2B-blue?logo=python">
-        <img src="https://img.shields.io/badge/PyTorch-2.0-orange?logo=pytorch">
-        <img src="https://img.shields.io/badge/License-MIT-green">
-    </p>
-</center>
+<h1><img src="view/icon/sdd-logo.png" width="10%">  钢铁表面缺陷检测系统</h1>
+<h3>Steel Surface Defect Detection System</h3>
+<p>
+    <img src="https://img.shields.io/badge/Python-3.12%2B-blue?logo=python">
+    <img src="https://img.shields.io/badge/PyTorch-2.0-orange?logo=pytorch">
+    <img src="https://img.shields.io/badge/PyQt6-red?logo=pyqt">
+    <img src="https://img.shields.io/badge/License-MIT-green">
+</p>
 
-<div align="center">
-    <img src="https://img.shields.io/badge/多模态检测-图片/视频-9cf" style="margin:5px">
-    <img src="https://img.shields.io/badge/双模型架构-ResNet50+U--Net-important" style="margin:5px">
-    <img src="https://img.shields.io/badge/检测精度-89.9%25-success" style="margin:5px">
-</div>
-
-
-** 技术架构与模型构建**
+**技术架构与模型构建**
 本项目基于PyTorch框架构建双引擎检测系统，采用ResNet50改进版实现缺陷分类（准确率85.2%），结合U-Net+FPN分割架构实现像素级缺陷定位（Dice系数0.899）。通过多线程优化实现实时推理，采用MVC架构设计GUI交互系统，集成PyQt6实现可视化看板与历史追溯功能，模型通过Albumentations数据增强和混合精度训练显著提升工业场景泛化能力。
 
-** 工业质检革新应用**
-系统专为钢铁制造业设计，可实时检测表面裂纹、夹杂、划痕等6类缺陷，支持产线摄像头实时流/历史影像/单张图片多模态输入。检测精度达89.9%，相比传统人工质检效率提升20倍，每日可处理10万+检测样本，帮助实现： 缺陷自动分级预警  质量报告自动生成 生产工艺优化决策，已成功应用于多家钢厂连续生产环境，年节约质检成本超百万。
+**工业质检革新应用**
+系统专为钢铁制造业设计，可实时检测表面裂纹、夹杂、划痕等4类缺陷，支持产线摄像头实时流/历史影像/单张图片多模态输入。检测精度达89.9%，通过用户传入的钢铁表面图片，传输给机器视觉模型作出分类与缺陷位置分割，用于自动判断和处理钢铁零部件的缺陷。
 
 ### 核心架构
 
@@ -33,6 +25,12 @@ graph TD
     E --> F
     F --> G[可视化展示]
 ```
+
+<div>
+    <img src="https://img.shields.io/badge/多模态检测-图片/视频-9cf" style="margin:5px">
+    <img src="https://img.shields.io/badge/双模型架构-ResNet50+U--Net-important" style="margin:5px">
+    <img src="https://img.shields.io/badge/检测精度-89.9%25-success" style="margin:5px">
+</div>
 
 ## 快速启动
 
