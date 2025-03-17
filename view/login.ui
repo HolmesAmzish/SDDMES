@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>419</height>
+    <width>567</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>登陆</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -90,7 +90,7 @@
     <rect>
      <x>280</x>
      <y>0</y>
-     <width>371</width>
+     <width>291</width>
      <height>421</height>
     </rect>
    </property>
@@ -106,10 +106,10 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>50</y>
+      <x>50</x>
+      <y>150</y>
       <width>191</width>
-      <height>81</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
@@ -128,6 +128,9 @@
     <property name="text">
      <string>钢铁材料缺陷检测系统</string>
     </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
@@ -135,6 +138,89 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>40</y>
+      <width>111</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icon/sdd-logo-white.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>400</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white</string>
+    </property>
+    <property name="text">
+     <string>版本：2025 1.1.0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>270</y>
+      <width>161</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white</string>
+    </property>
+    <property name="text">
+     <string>欢迎使用车辆零部件表面缺陷视觉检测系统</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>400</y>
+     <width>261</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color:gray</string>
+   </property>
+   <property name="text">
+    <string>钢铁材料缺陷缺陷检测系统™</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
  </widget>
  <resources/>

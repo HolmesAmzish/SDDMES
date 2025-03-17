@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
         self.operation_group.setObjectName("operation_group")
         self.run_btn = QtWidgets.QPushButton(parent=self.operation_group)
         self.run_btn.setGeometry(QtCore.QRect(20, 30, 121, 41))
-        self.run_btn.setStyleSheet("background-color:lightblue; color:white")
+        self.run_btn.setStyleSheet("background-color:darkgreen; color:white")
         self.run_btn.setObjectName("run_btn")
         self.save_all_btn = QtWidgets.QPushButton(parent=self.operation_group)
         self.save_all_btn.setGeometry(QtCore.QRect(20, 80, 121, 41))
