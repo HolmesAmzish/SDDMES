@@ -1,6 +1,5 @@
 <center>
-    <img src="view/icon/sdd-logo.png" width="15%">
-    <h1>钢铁表面缺陷检测系统</h1>
+    <h1><img src="view/icon/sdd-logo.png" width="10%">   钢铁表面缺陷检测系统</h1>
     <h3>Steel Surface Defect Detection System</h3>
     <p align="center">
         <img src="https://img.shields.io/badge/Python-3.8%2B-blue?logo=python">
