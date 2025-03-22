@@ -1,11 +1,12 @@
-<h1><img src="view/icon/sdd-logo.png" width="10%">  钢铁表面缺陷检测系统</h1>
-<h3>Steel Surface Defect Detection System</h3>
-<p>
-    <img src="https://img.shields.io/badge/Python-3.12%2B-blue?logo=python">
-    <img src="https://img.shields.io/badge/PyTorch-2.0-orange?logo=pytorch">
-    <img src="https://img.shields.io/badge/PyQt6-red?logo=pyqt">
-    <img src="https://img.shields.io/badge/License-MIT-green">
-</p>
+<center>
+    <h1><img src="view/icon/sdd-logo.png" width="10%">  钢铁表面缺陷检测系统</h1>
+    <h3>Steel Surface Defect Detection System</h3>
+    <p>
+        <img src="https://img.shields.io/badge/Python-3.12%2B-blue?logo=python">
+        <img src="https://img.shields.io/badge/PyTorch-2.0-orange?logo=pytorch">
+        <img src="https://img.shields.io/badge/PyQt-6.8-green?logo=pyqt">
+    </p>
+</center>
 
 **技术架构与模型构建**
 本项目基于PyTorch框架构建双引擎检测系统，采用ResNet50改进版实现缺陷分类（准确率85.2%），结合U-Net+FPN分割架构实现像素级缺陷定位（Dice系数0.899）。通过多线程优化实现实时推理，采用MVC架构设计GUI交互系统，集成PyQt6实现可视化看板与历史追溯功能，模型通过Albumentations数据增强和混合精度训练显著提升工业场景泛化能力。
@@ -62,6 +63,5 @@ python main.py
 <center>
     <sub>本项目采用 MIT License，转载请注明项目来源。</sub>
 </center>
-
 
 

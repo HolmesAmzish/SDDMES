@@ -1,18 +1,14 @@
 import os
-import sys
 from queue import Queue
 import cv2
-import numpy as np
 import torch
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem
 from PyQt6.QtCore import QTimer
-from PyQt6.QtMultimedia import QMediaPlayer
-from PyQt6.QtMultimediaWidgets import QVideoWidget
 from view.main_ui import Ui_MainWindow
-from utilis.database import DatabaseHelper, DetectResult, DetectObj
-from utilis.defect_dict import translate_defects
+from utilis.database import DatabaseHelper, DetectObj
+from utilis.label_transfer import format_defects
 from controller.figure_process_worker import FigureProcessWorker
 from controller.video_process_worker import VideoProcessWorker
 from controller.history_controller import HistoryDialog
@@ -34,7 +30,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Initialize database
         self.conn = DatabaseHelper(host='localhost', user='cacc', password='20230612')
         
-
         # Maintain a queue to be detected and a list for saving results
         self.chosen_video = None  # Chosen video to be detected
         self.detect_queue = Queue()  # Figure queue to be detected
@@ -51,6 +46,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.run_btn.clicked.connect(self.start_detection)
         self.save_all_btn.clicked.connect(self.save_all_to_db)
         self.check_db_btn.clicked.connect(self.show_history_dialog)
+
+        self.result_table.horizontalHeader().sectionClicked.connect(self.sort_table_by_column)
 
         # Video detection operation group btn
         self.video_browse_btn.clicked.connect(self.select_video)
@@ -163,16 +160,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """Push object to detect into queue"""
         self.detect_queue.put(detect_obj)
         self.detect_list.addItem(detect_obj.name)
-
+ 
     def insert_result_to_table(self, result):
         """Insert detect result to table view"""
         row_position = self.result_table.rowCount()
         self.result_table.insertRow(row_position)
         self.result_table.setItem(row_position, 0, QTableWidgetItem(result.name))
-        self.result_table.setItem(row_position, 1, QTableWidgetItem(result.label))
+        self.result_table.setItem(row_position, 1, QTableWidgetItem(format_defects(result.label)))
         self.result_table.setItem(row_position, 2, QTableWidgetItem(str(result.num)))
         self.result_table.setItem(row_position, 3, QTableWidgetItem(result.time))
         self.result_table.itemClicked.connect(self.show_item_info)
+
+    def sort_table_by_column(self, column):
+        self.result_table.sortItems(column, QtCore.Qt.SortOrder.AscendingOrder)
+    
+    def sort_table_by_column(self, index):
+        """点击表头排序"""
+        self.result_table.sortItems(index, QtCore.Qt.SortOrder.AscendingOrder)
+
 
     def show_item_info(self, item):
         """Show item info of table"""
@@ -186,10 +191,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_info(self, result):
         """TODO: Show the information of specific record in result_table"""
-        # self.console.append(f"{type(result.label)}")
-        defects = translate_defects(result.label)
-        self.class_label.setText("、".join(defects))
+        self.class_label.setText(format_defects(result.label))
         self.dice_label.setText(result.dice)
+
+        detail_text = (
+            f"图片名称：{result.name}，检测时间：{result.time}，缺陷数量：{result.num}"
+        )
+        
+        self.detail_info_label.setText(detail_text)
 
         # Show result figure
         pixmap = QtGui.QPixmap()

@@ -38,7 +38,7 @@ class Ui_Dialog(object):
         self.frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame.setObjectName("frame")
         self.label_3 = QtWidgets.QLabel(parent=self.frame)
-        self.label_3.setGeometry(QtCore.QRect(50, 150, 191, 111))
+        self.label_3.setGeometry(QtCore.QRect(40, 160, 211, 111))
         font = QtGui.QFont()
         font.setPointSize(22)
         font.setBold(True)
@@ -66,7 +66,7 @@ class Ui_Dialog(object):
         self.label_6.setStyleSheet("color:white")
         self.label_6.setObjectName("label_6")
         self.label_7 = QtWidgets.QLabel(parent=self.frame)
-        self.label_7.setGeometry(QtCore.QRect(70, 270, 161, 51))
+        self.label_7.setGeometry(QtCore.QRect(50, 270, 201, 71))
         self.label_7.setStyleSheet("color:white")
         self.label_7.setWordWrap(True)
         self.label_7.setObjectName("label_7")
@@ -84,12 +84,12 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "登陆"))
+        Dialog.setWindowTitle(_translate("Dialog", "智眸精检 - 登陆"))
         self.label.setText(_translate("Dialog", "用户名"))
         self.label_2.setText(_translate("Dialog", "密码"))
         self.pushButton.setText(_translate("Dialog", "登陆"))
         self.checkBox.setText(_translate("Dialog", "记住密码"))
-        self.label_3.setText(_translate("Dialog", "钢铁材料缺陷检测系统"))
+        self.label_3.setText(_translate("Dialog", "智眸精检零部件缺陷检测系统"))
         self.label_6.setText(_translate("Dialog", "版本：2025 1.1.0"))
-        self.label_7.setText(_translate("Dialog", "欢迎使用车辆零部件表面缺陷视觉检测系统"))
+        self.label_7.setText(_translate("Dialog", "欢迎使用基于机器视觉的高效钢铁零部件表面缺陷检测系统"))
         self.label_5.setText(_translate("Dialog", "钢铁材料缺陷缺陷检测系统™"))

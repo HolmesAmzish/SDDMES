@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>登陆</string>
+   <string>智眸精检 - 登陆</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -106,9 +106,9 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>150</y>
-      <width>191</width>
+      <x>40</x>
+      <y>160</y>
+      <width>211</width>
       <height>111</height>
      </rect>
     </property>
@@ -126,7 +126,7 @@
      <string notr="true">color:white</string>
     </property>
     <property name="text">
-     <string>钢铁材料缺陷检测系统</string>
+     <string>智眸精检零部件缺陷检测系统</string>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -181,17 +181,17 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>50</x>
       <y>270</y>
-      <width>161</width>
-      <height>51</height>
+      <width>201</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">color:white</string>
     </property>
     <property name="text">
-     <string>欢迎使用车辆零部件表面缺陷视觉检测系统</string>
+     <string>欢迎使用基于机器视觉的高效钢铁零部件表面缺陷检测系统</string>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
@@ -216,7 +216,7 @@
     <string notr="true">color:gray</string>
    </property>
    <property name="text">
-    <string>钢铁材料缺陷缺陷检测系统™</string>
+    <string>智眸精检高效零部件缺陷监测系统™</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

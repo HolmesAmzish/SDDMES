@@ -1,9 +1,4 @@
-defect_dict = {
-    0: "夹杂物",
-    1: "补丁",
-    2: "划痕",
-    3: "其他",
-}
+defect_dict = ["夹杂物","补丁","划痕","其他"]
 
 def translate_defects(string_list):
     """
@@ -26,7 +21,7 @@ def translate_defects(string_list):
     
     return defects if defects else ["无缺陷"]
 
-def format_defects(defects):
+def format_defects(string_list):
     """
     Format the list of defects into a readable string.
     Args:
@@ -34,4 +29,5 @@ def format_defects(defects):
     Returns:
         str: Formatted string of defects
     """
+    defects = translate_defects(string_list)
     return '、'.join(defects)

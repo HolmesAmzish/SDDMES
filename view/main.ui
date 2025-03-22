@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>874</width>
-    <height>570</height>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>钢铁缺陷检测系统</string>
+   <string>智眸精检 - 缺陷识别 v1.1.0</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -33,61 +33,6 @@
        <attribute name="title">
         <string>图片检测</string>
        </attribute>
-       <widget class="QGroupBox" name="operation_group">
-        <property name="geometry">
-         <rect>
-          <x>240</x>
-          <y>320</y>
-          <width>161</width>
-          <height>181</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>运行</string>
-        </property>
-        <widget class="QPushButton" name="run_btn">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>30</y>
-           <width>121</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color:darkgreen; color:white</string>
-         </property>
-         <property name="text">
-          <string>开始运行</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="save_all_btn">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>80</y>
-           <width>121</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>保存所有</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="check_db_btn">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>130</y>
-           <width>121</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>查看历史</string>
-         </property>
-        </widget>
-       </widget>
        <widget class="QLabel" name="result_label">
         <property name="geometry">
          <rect>
@@ -98,10 +43,10 @@
          </rect>
         </property>
         <property name="styleSheet">
-         <string notr="true">back</string>
+         <string notr="true">background-color: white</string>
         </property>
         <property name="text">
-         <string>无结果</string>
+         <string>等待结果</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -124,9 +69,9 @@
         <property name="geometry">
          <rect>
           <x>410</x>
-          <y>120</y>
+          <y>160</y>
           <width>411</width>
-          <height>381</height>
+          <height>341</height>
          </rect>
         </property>
         <column>
@@ -172,7 +117,7 @@
         <property name="geometry">
          <rect>
           <x>240</x>
-          <y>120</y>
+          <y>160</y>
           <width>161</width>
           <height>191</height>
          </rect>
@@ -352,6 +297,61 @@
          </property>
         </widget>
        </widget>
+       <widget class="QPushButton" name="run_btn">
+        <property name="geometry">
+         <rect>
+          <x>250</x>
+          <y>360</y>
+          <width>141</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color:darkgreen; color:white</string>
+        </property>
+        <property name="text">
+         <string>开始运行</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="save_all_btn">
+        <property name="geometry">
+         <rect>
+          <x>250</x>
+          <y>410</y>
+          <width>141</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>保存所有</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="check_db_btn">
+        <property name="geometry">
+         <rect>
+          <x>250</x>
+          <y>460</y>
+          <width>141</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>查看历史</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="detail_info_label">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>120</y>
+          <width>571</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>详细信息：</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="video_tab">
        <attribute name="title">
@@ -510,8 +510,10 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="status_bar"/>
   <widget class="QMenuBar" name="menu_bar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>0</x>
