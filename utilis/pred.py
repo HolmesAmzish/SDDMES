@@ -29,11 +29,3 @@ def predict(name=None, image_data=None, mode=None, path=None, model_class=None, 
     probability_label, df_classification,time_class = get_classification_preds(model_class, testset)
     df_segmentation, time_seg =get_seg_preds(model_seg, testset, df_classification)
     return probability_label, df_segmentation, time_class + time_seg
-
-
-def predict_from_figure(figure_list, model_class, model_seg):
-    dataset = pack_binary_images(figure_list)
-    probability_labels, df_classifications, time_class = get_classification_preds(model_class, dataset)
-    df_segmentation, time_seg = get_seg_preds(model_seg, dataset, df_classifications)
-    time_cost = time_class + time_seg
-    return list(probability_labels), list(df_segmentation), time_cost
