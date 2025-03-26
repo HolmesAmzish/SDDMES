@@ -39,9 +39,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Figures detection operation group btn
         self.figure_btn.clicked.connect(self.browse_image)
-        self.add_figure_btn.clicked.connect(self.add_figure)
         self.folder_btn.clicked.connect(self.browse_folder)
-        self.add_folder_btn.clicked.connect(self.add_figure_folder)
 
         self.run_btn.clicked.connect(self.start_detection)
         self.save_all_btn.clicked.connect(self.save_all_to_db)
@@ -69,6 +67,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.figure_path_edit.setText(file_path)
         else:
             self.console.append(f"添加未找到文件: {file_path}")
+
+        self.add_figure()
 
     def add_figure(self):
         figure_path = self.figure_path_edit.text().strip()
@@ -98,6 +98,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.folder_path_edit.setText(file_path)
         else:
             self.console.append(f"添加未找到文件夹: {file_path}")
+
+        self.add_figure_folder()
 
     def add_figure_folder(self):
         folder_path = self.folder_path_edit.text().strip()
@@ -191,8 +193,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_info(self, result):
         """TODO: Show the information of specific record in result_table"""
-        self.class_label.setText(format_defects(result.label))
-        self.dice_label.setText(result.dice)
+        self.class_label.setText(f'类别：{format_defects(result.label)}')
+        self.dice_label.setText(f'分类置信度：{result.dice}')
 
         detail_text = (
             f"图片名称：{result.name}，检测时间：{result.time}，缺陷数量：{result.num}"

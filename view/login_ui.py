@@ -92,4 +92,4 @@ class Ui_Dialog(object):
         self.label_3.setText(_translate("Dialog", "智眸精检零部件缺陷检测系统"))
         self.label_6.setText(_translate("Dialog", "版本：2025 1.1.0"))
         self.label_7.setText(_translate("Dialog", "欢迎使用基于机器视觉的高效钢铁零部件表面缺陷检测系统"))
-        self.label_5.setText(_translate("Dialog", "钢铁材料缺陷缺陷检测系统™"))
+        self.label_5.setText(_translate("Dialog", "智眸精检高效零部件缺陷监测系统™"))

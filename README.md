@@ -1,14 +1,15 @@
 <center>
-    <h1><img src="view/icon/sdd-logo.png" width="10%">  钢铁表面缺陷检测系统</h1>
-    <h3>Steel Surface Defect Detection System</h3>
-    <p>
-        <img src="https://img.shields.io/badge/Python-3.13.2-blue?logo=python">
-        <img src="https://img.shields.io/badge/PyTorch-2.6.0-orange?logo=pytorch">
-        <img src="https://img.shields.io/badge/PyQt-6.8.1-green?logo=qt">
-        <img src="https://img.shields.io/badge/OpenCV-4.11-blue?logo=opencv">
-        <img src="https://img.shields.io/badge/CUDA-12.4-teal?logo=nvidia">
-    </p>
+  <h1><img src="view/icon/sdd-logo.png" width="10%"> 钢铁表面缺陷检测系统</h1>
+  <h3>Steel Surface Defect Detection System</h3>
+  <p style="white-space: nowrap;">
+    <img src="https://img.shields.io/badge/Python-3.13.2-blue?logo=python">
+    <img src="https://img.shields.io/badge/PyTorch-2.6.0-orange?logo=pytorch">
+    <img src="https://img.shields.io/badge/PyQt-6.8.1-green?logo=qt">
+    <img src="https://img.shields.io/badge/OpenCV-4.11-blue?logo=opencv">
+    <img src="https://img.shields.io/badge/CUDA-12.4-teal?logo=nvidia">
+  </p>
 </center>
+
 
 
 
