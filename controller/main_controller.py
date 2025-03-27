@@ -6,6 +6,7 @@ from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem
 from PyQt6.QtCore import QTimer
+from qt_material import apply_stylesheet
 from view.main_ui import Ui_MainWindow
 from utilis.database import DatabaseHelper, DetectObj
 from utilis.label_transfer import format_defects
@@ -13,7 +14,9 @@ from controller.figure_process_worker import FigureProcessWorker
 from controller.video_process_worker import VideoProcessWorker
 from controller.history_controller import HistoryDialog
 
-
+"""
+Main Window Controller
+"""
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Initialize models
@@ -26,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        apply_stylesheet(self, theme='light_blue.xml')
 
         # Initialize database
         self.conn = DatabaseHelper(host='localhost', user='cacc', password='20230612')

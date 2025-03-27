@@ -74,6 +74,9 @@
           <height>251</height>
          </rect>
         </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
         <column>
          <property name="text">
           <string>名称</string>
@@ -92,11 +95,6 @@
         <column>
          <property name="text">
           <string>用时</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string/>
          </property>
         </column>
        </widget>

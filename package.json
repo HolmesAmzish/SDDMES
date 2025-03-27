@@ -1,0 +1,17 @@
+{
+  "name": "sdd",
+  "version": "1.0.0",
+  "description": "Steel Defect Detection",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "start": "./electron/electron ."
+  },
+  "author": "Cacciatore",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "23.0.0"
+  }
+}

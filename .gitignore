@@ -1,5 +1,7 @@
 data/
 build/
+node_modules/
+electron/
 **/*.pyc
 **/*.pth
 **/*.mp4
