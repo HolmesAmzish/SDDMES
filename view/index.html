@@ -82,7 +82,7 @@
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">选择图片文件</label>
                   <div class="flex space-x-2">
-                    <input type="text" id="image-path" placeholder="图片路径" class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="file" id="image-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <button id="browse-image" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                       浏览
                     </button>
@@ -90,12 +90,9 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">选择图片文件夹</label>
-                  <div class="flex space-x-2">
-                    <input type="text" id="folder-path" placeholder="文件夹路径" class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <button id="browse-folder" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                      浏览
-                    </button>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">已选择图片</label>
+                  <div id="image-list" class="bg-gray-100 rounded-lg p-4 border border-gray-200 max-h-32 overflow-auto">
+                    <!-- 动态列表 -->
                   </div>
                 </div>
 
@@ -138,6 +135,60 @@
     </div>
   </div>
 
-  <script src="renderer.js"></script>
+  <script>
+    const imageList = [];
+    const resultList = [];
+
+    document.getElementById('browse-image').addEventListener('click', function() {
+      const fileInput = document.getElementById('image-input');
+      fileInput.click();
+    });
+
+    document.getElementById('image-input').addEventListener('change', function(event) {
+      const files = event.target.files;
+      for (let file of files) {
+        imageList.push(file);
+        const listItem = document.createElement('div');
+        listItem.classList.add('flex', 'items-center', 'space-x-2', 'py-2');
+        listItem.innerHTML = `
+          <span>${file.name}</span>
+        `;
+        document.getElementById('image-list').appendChild(listItem);
+      }
+    });
+
+    document.getElementById('start-detection').addEventListener('click', async function() {
+      if (imageList.length === 0) {
+        alert('请先选择图片文件！');
+        return;
+      }
+      
+      for (let file of imageList) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch('http://localhost:5000/api/detect', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+        resultList.push(data);
+
+        const resultRow = document.createElement('tr');
+        resultRow.innerHTML = `
+          <td class="px-4 py-3">${data.name}</td>
+          <td class="px-4 py-3">${JSON.parse(data.labels)[0]}</td>
+          <td class="px-4 py-3">${data.defect_count}</td>
+          <td class="px-4 py-3">${data.processing_time}s</td>
+        `;
+        resultRow.addEventListener('click', function() {
+          document.getElementById('result-image').src = `data:image/jpeg;base64,${data.result_image}`;
+        });
+        document.getElementById('results-body').appendChild(resultRow);
+      }
+    });
+  </script>
+
 </body>
 </html>
