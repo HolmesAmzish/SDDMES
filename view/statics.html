@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>钢材缺陷检测系统 - 数据分析</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .sidebar-button.active {
+      @apply bg-blue-600 text-white;
+    }
+    .chart-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .chart-container {
+      flex: 1;
+      height: 300px;
+      max-width: 30%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- 侧边栏 - 与主界面保持一致 -->
+    <aside class="w-32 bg-white shadow-md p-4 flex-shrink-0">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-800">工具栏</h2>
+      </div>
+      <nav>
+        <ul class="space-y-2">
+          <li>
+            <a href="index.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
+              图片检测
+            </a>
+          </li>
+          <li>
+            <a href="video.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
+              视频检测
+            </a>
+          </li>
+          <li>
+            <a href="statics.html" class="block w-full text-left px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+              数据分析
+            </a>
+          </li>
+          <li>
+            <a href="ai-analysis.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
+              AI 分析
+            </a>
+          </li>
+          <li>
+            <a href="console.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
+              控制台
+            </a>
+          </li>
+          <li>
+            <a href="settings.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
+              设置
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主内容区域 - 数据分析页面内容 -->
+    <div class="flex-1 p-5">
+      <h2 class="text-center text-2xl font-semibold mb-5">缺陷检测数据</h2>
+
+      <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 mb-4"
+              onclick="fetchData()">刷新数据</button>
+
+      <div class="bg-white rounded-xl shadow-md mb-5">
+        <div class="p-4">
+          <h5 class="text-center text-lg font-medium mb-3">数据分析图表</h5>
+          <div class="chart-row">
+            <div class="chart-container">
+              <canvas id="labelChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <canvas id="timeChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <canvas id="numChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md">
+        <div class="p-4">
+          <h5 class="text-center text-lg font-medium mb-3">数据表格</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead class="bg-gray-800 text-white">
+              <tr>
+                <th class="py-2 px-4 text-center">ID</th>
+                <th class="py-2 px-4 text-center">名称</th>
+                <th class="py-2 px-4 text-center">日期</th>
+                <th class="py-2 px-4 text-center">时间</th>
+                <th class="py-2 px-4 text-center">标签</th>
+                <th class="py-2 px-4 text-center">时间分布</th>
+                <th class="py-2 px-4 text-center">评分</th>
+              </tr>
+              </thead>
+              <tbody id="data-table" class="text-center">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let labelChartInstance = null;
+    let timeChartInstance = null;
+    let numChartInstance = null;
+
+    function parseLabel(labelStr) {
+      try {
+        const defectDict = ["夹杂物", "补丁", "划痕", "其他"];
+        const boolArray = labelStr.replace(/\[|\]/g, '').trim().split(/\s+/).map(v => v.toLowerCase() === 'true');
+        return boolArray.map((val, index) => val ? defectDict[index] : null).filter(v => v !== null);
+      } catch (e) {
+        return ['解析错误'];
+      }
+    }
+
+    function parseTimeToSeconds(timeStr) {
+      return Number(timeStr);
+    }
+
+    async function fetchData() {
+      const tableBody = document.getElementById('data-table');
+      tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-2">加载中...</td></tr>';
+
+      try {
+        const response = await fetch('http://localhost:8080/api/data/getAll');
+        if (!response.ok) throw new Error('数据获取失败');
+        const data = await response.json();
+        console.log('后端返回的数据:', data);
+        tableBody.innerHTML = '';
+
+        let labelCounts = {"夹杂物": 0, "补丁": 0, "划痕": 0, "其他": 0};
+        let timeCounts = {"0.05-0.07": 0, "0.07-0.09": 0, "0.09-0.11": 0, "0.11-0.13": 0, "0.13-0.15": 0};
+        let numCounts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0};
+
+        data.forEach(item => {
+          const detectedLabels = parseLabel(item.label);
+          detectedLabels.forEach(label => {
+            if (labelCounts.hasOwnProperty(label)) {
+              labelCounts[label]++;
+            }
+          });
+
+          const num = parseInt(item.num);
+          if (numCounts.hasOwnProperty(num)) {
+            numCounts[num]++;
+          }
+
+          const timeInSeconds = parseTimeToSeconds(item.time);
+          let timeRange = '';
+          if (timeInSeconds >= 0.05 && timeInSeconds <= 0.15) {
+            if (timeInSeconds <= 0.07) timeRange = "0.05-0.07";
+            else if (timeInSeconds <= 0.09) timeRange = "0.07-0.09";
+            else if (timeInSeconds <= 0.11) timeRange = "0.09-0.11";
+            else if (timeInSeconds <= 0.13) timeRange = "0.11-0.13";
+            else if (timeInSeconds <= 0.15) timeRange = "0.13-0.15";
+            timeCounts[timeRange]++;
+          } else {
+            timeRange = '超出范围';
+          }
+
+          let row = `<tr>
+            <td class="py-2 px-4">${item.figId}</td>
+            <td class="py-2 px-4">${item.name}</td>
+            <td class="py-2 px-4">${item.date}</td>
+            <td class="py-2 px-4">${item.time}</td>
+            <td class="py-2 px-4">${detectedLabels.join(', ')}</td>
+            <td class="py-2 px-4">${timeRange}</td>
+            <td class="py-2 px-4">${item.dice}</td>
+          </tr>`;
+          tableBody.innerHTML += row;
+        });
+
+        updateLabelChart(labelCounts);
+        updateTimeChart(timeCounts);
+        updateNumChart(numCounts);
+
+      } catch (error) {
+        console.error(error);
+        tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red-500 py-2">数据加载失败</td></tr>';
+      }
+    }
+
+    function updateLabelChart(labelCounts) {
+      const labels = Object.keys(labelCounts);
+      const data = Object.values(labelCounts);
+      const ctx = document.getElementById('labelChart').getContext('2d');
+
+      if (labelChartInstance) {
+        labelChartInstance.destroy();
+      }
+
+      labelChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '缺陷标签分布',
+            data: data,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)',
+              'rgba(75, 192, 192, 0.6)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          layout: {
+            padding: {
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: 20
+            }
+          },
+          chartArea: {
+            width: '50%',
+            height: '50%'
+          }
+        }
+      });
+    }
+
+    function updateTimeChart(timeCounts) {
+      const labels = Object.keys(timeCounts);
+      const data = Object.values(timeCounts);
+      const ctx = document.getElementById('timeChart').getContext('2d');
+
+      if (timeChartInstance) {
+        timeChartInstance.destroy();
+      }
+
+      timeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '检测时间分布',
+            data: data,
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function updateNumChart(numCounts) {
+      const labels = Object.keys(numCounts).map(key => `${key}个缺陷`);
+      const data = Object.values(numCounts);
+      const ctx = document.getElementById('numChart').getContext('2d');
+
+      if (numChartInstance) {
+        numChartInstance.destroy();
+      }
+
+      numChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '缺陷数目分布',
+            data: data,
+            backgroundColor: 'rgba(255, 206, 86, 0.7)',
+            borderColor: 'rgba(255, 206, 86, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // 页面加载时自动获取数据
+    document.addEventListener('DOMContentLoaded', fetchData);
+  </script>
+</body>
+</html>

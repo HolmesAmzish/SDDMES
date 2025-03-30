@@ -1,9 +1,15 @@
+# Data and Denpendencies
 data/
-build/
 node_modules/
 electron/
+
+# IDE setting files
+.idea/
+.vscode/
+
+# Byte-compiled
+build/
 **/*.pyc
 **/*.pth
 **/*.mp4
-
 output.mp4

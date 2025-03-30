@@ -2,7 +2,7 @@
   "name": "sdd",
   "version": "1.0.0",
   "description": "Steel Defect Detection",
-  "main": "index.js",
+  "main": "main.js",
   "directories": {
     "doc": "doc"
   },
