@@ -60,9 +60,21 @@ conda activate sdd
 pip install -r requirements.txt
 ```
 
+<img src="doc/Sdd-Diagram.drawio.png" width=80%>
+
+
+
 ### 运行系统
+
 ```bash
-python3 main.py
+# 机器视觉检测服务
+python3 app.py
+
+# 数据库服务
+java -jar database_server/target/SDDAnalyzer-0.0.1-SNAPSHOT.jar
+
+# 前端交互界面
+npm run start
 ```
 
 <center>

@@ -5,16 +5,17 @@ const { spawn } = require('child_process');
 let mainWindow;
 let pythonProcess = null;
 
+// Set the test account
 const VALID_CREDENTIALS = {
-  username: 'admin',
-  password: '123456'
+  username: '',
+  password: ''
 };
 
 function createLoginWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 600, // 调整为更适合登录界面的高度
-    resizable: false,
+    width: 1000,
+    height: 600,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -30,8 +31,8 @@ function createLoginWindow() {
 }
 
 function createMainWindow() {
-  mainWindow.setSize(1400, 800);
-  mainWindow.maximize();
+  mainWindow.setSize(1400, 840);
+  // mainWindow.maximize();
   mainWindow.loadFile('./view/index.html').then(() => {
     console.log('主窗口加载成功');
   }).catch(err => console.error('加载主窗口失败:', err));
@@ -56,6 +57,7 @@ app.on('window-all-closed', () => {
   if (pythonProcess) pythonProcess.kill();
 });
 
+// TODO: Implement the login api of springboot
 ipcMain.handle('login', async (event, { username, password }) => {
   console.log('收到登录请求:', { username, password });
   if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {

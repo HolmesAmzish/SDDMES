@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 分析缺陷数据</title>
+  <!-- 使用 Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入 marked 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    textarea {
+      resize: none;
+    }
+    #aiResult h1 { font-size: 1.5em; margin-top: 1em; }
+    #aiResult h2 { font-size: 1.3em; margin-top: 0.8em; }
+    #aiResult h3 { font-size: 1.1em; margin-top: 0.6em; }
+    #aiResult ul, #aiResult ol { padding-left: 20px; }
+    #aiResult pre { background-color: #f1f1f1; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+<div class="fixed top-0 left-0 h-screen w-64 bg-gray-800 p-5">
+  <h4 class="text-center text-white mb-5">钢铁缺陷分析平台</h4>
+  <a href="index.html" class="block py-2 px-4 text-white text-lg hover:bg-gray-700 transition duration-300">数据展示</a>
+  <a href="statics.html" class="block py-2 px-4 text-white text-lg hover:bg-gray-700 transition duration-300">统计分析</a>
+  <a href="ai-analysis.html" class="block py-2 px-4 text-white text-lg hover:bg-gray-700 transition duration-300">AI 分析</a>
+  <a href="#" class="block py-2 px-4 text-white text-lg hover:bg-gray-700 transition duration-300">⚙️ 设置</a>
+</div>
+
+<div class="ml-64 p-5">
+  <h2 class="text-center text-2xl font-semibold mb-5">AI 分析缺陷数据</h2>
+
+  <div class="mb-4">
+    <label for="promptInput" class="block text-sm font-medium text-gray-700">输入你的分析请求</label>
+    <textarea class="mt-1 w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="promptInput" rows="4" placeholder="例如：请分析最近一周的缺陷数据趋势..."></textarea>
+  </div>
+  <button id="analyzeButton" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+          onclick="analyzeData()">提交给 AI</button>
+
+  <div class="mt-5">
+    <h4 class="text-lg font-medium">分析结果</h4>
+    <div id="aiResult" class="p-3 bg-gray-100 border rounded-md h-64 overflow-y-auto" style="white-space: pre-wrap;">等待分析...</div>
+  </div>
+
+  <!-- 状态指示 -->
+  <div id="status" class="mt-4 text-sm text-gray-500 text-center"></div>
+</div>
+
+<script>
+  const analyzeButton = document.getElementById('analyzeButton');
+  const promptInput = document.getElementById('promptInput');
+  const resultDiv = document.getElementById('aiResult');
+  const statusDiv = document.getElementById('status');
+
+  async function analyzeData() {
+    const prompt = promptInput.value.trim();
+    if (!prompt) {
+      resultDiv.textContent = '请输入分析请求';
+      return;
+    }
+
+    // 清空之前的响应和状态
+    resultDiv.innerHTML = '';
+    statusDiv.textContent = 'AI 正在分析中...';
+    analyzeButton.disabled = true;
+    analyzeButton.textContent = '处理中...';
+
+    try {
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sk-c6c11ae0a25a4e1ea64ff97e98d4057a'
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [{ role: 'user', content: prompt }],
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`AI 请求失败: ${response.status} - ${errorText}`);
+      }
+
+      // 处理流式响应
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let result = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices[0]?.delta?.content || '';
+              result += content;
+              // 使用 marked 解析 Markdown 并渲染
+              resultDiv.innerHTML = marked.parse(result);
+              resultDiv.scrollTop = resultDiv.scrollHeight; // 自动滚动到底部
+            } catch (e) {
+              console.error('解析错误:', e);
+            }
+          }
+        }
+      }
+
+      statusDiv.textContent = '分析完成！';
+    } catch (error) {
+      statusDiv.textContent = `错误: ${error.message}`;
+      resultDiv.innerHTML = '发生错误，请稍后重试。';
+    } finally {
+      analyzeButton.disabled = false;
+      analyzeButton.textContent = '提交给 AI';
+    }
+  }
+</script>
+
+</body>
+</html>

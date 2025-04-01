@@ -45,56 +45,57 @@ class APIResult:
 
 @app.route('/api/detect', methods=['POST'])
 def detect():
-    # Check if image is provided
-    if 'image' not in request.files and 'image_data' not in request.form:
-        return jsonify({"error": "No image provided"}), 400
-    
-    try:
-        # Get image data
-        if 'image' in request.files:
-            image_file = request.files['image']
+    # Check if images are provided
+    if 'images' not in request.files:
+        return jsonify({"error": "No images provided"}), 400
+
+    image_files = request.files.getlist('images')
+    results = []
+
+    for image_file in image_files:
+        try:
             image_data = image_file.read()
             filename = image_file.filename or "uploaded_image.jpg"
-        else:
-            # Support for base64 encoded image
-            image_data = base64.b64decode(request.form['image_data'])
-            filename = request.form.get('filename', 'uploaded_image.jpg')
+            
+            # Validate image
+            try:
+                Image.open(io.BytesIO(image_data)).verify()
+            except Exception as e:
+                return jsonify({"error": f"Invalid image data for {filename}", "details": str(e)}), 400
+
+            # Process image
+            predicted_label, segmentation, time_cost = predict(
+                name=filename,
+                image_data=image_data,
+                model_class=class_model,
+                model_seg=seg_model,
+                mode=2
+            )
+            
+            # Generate result image
+            res_fig = eda(df=segmentation, data=image_data)
+            
+            # Create result object
+            result = APIResult(
+                name=filename,
+                res_fig=res_fig,
+                time=f"{time_cost:.2f}",
+                label=', '.join(predicted_label['predict_label'].astype(str)),
+                num=str(len(segmentation[segmentation["EncodedPixels"] != ''])),
+                dice=', '.join(predicted_label['probability_label'].astype(str))
+            )
+            
+            # Append result to list
+            results.append(result.to_dict())
         
-        # Validate image
-        try:
-            Image.open(io.BytesIO(image_data)).verify()
         except Exception as e:
-            return jsonify({"error": "Invalid image data", "details": str(e)}), 400
-        
-        # Process image
-        predicted_label, segmentation, time_cost = predict(
-            name=filename,
-            image_data=image_data,
-            model_class=class_model,
-            model_seg=seg_model,
-            mode=2
-        )
-        
-        # Generate result image
-        res_fig = eda(df=segmentation, data=image_data)
-        
-        # Create result object
-        result = APIResult(
-            name=filename,
-            res_fig=res_fig,
-            time=f"{time_cost:.2f}",
-            label=', '.join(predicted_label['predict_label'].astype(str)),
-            num=str(len(segmentation[segmentation["EncodedPixels"] != ''])),
-            dice=', '.join(predicted_label['probability_label'].astype(str))
-        )
-        
-        return jsonify(result.to_dict())
-    
-    except Exception as e:
-        return jsonify({
-            "error": "Processing failed",
-            "details": str(e)
-        }), 500
+            results.append({
+                "error": f"Processing failed for {filename}",
+                "details": str(e)
+            })
+
+    return jsonify(results)
+
 
 if __name__ == '__main__':
     # Create models directory if not exists
