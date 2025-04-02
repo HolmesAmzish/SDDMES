@@ -9,63 +9,133 @@
     .sidebar-button.active {
       @apply bg-blue-600 text-white;
     }
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background: #000;
+    }
+    .result-container {
+      margin-top: 20px;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .video-preview {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
   <div class="flex min-h-screen">
     <!-- 侧边栏 -->
-    <aside class="w-32 bg-white shadow-md p-4 flex-shrink-0">
+    <aside class="w-40 bg-white shadow-md p-4 flex-shrink-0 relative">
       <div class="mb-6">
-        <h2 class="text-xl font-bold text-gray-800">工具栏</h2>
+        <h1 class="text-center font-bold text-gray-800">工具栏</h1>
       </div>
-      <nav>
-        <ul class="space-y-2">
-          <li>
-            <a href="index.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              图片检测
-            </a>
-          </li>
-          <li>
-            <a href="video.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              视频检测
-            </a>
-          </li>
-
-          <li>
-            <a href="statics.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              数据分析
-            </a>
-          </li>
-
-          <li>
-            <a href="ai-analysis.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              AI 分析
-            </a>
-          </li>
-
-          <li>
-            <a href="console.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              控制台
-            </a>
-          </li>
-          <li>
-            <a href="settings.html" class="block w-full text-left px-4 py-2 bg-gray-100 hover:bg-blue-50 rounded-md transition-colors">
-              设置
-            </a>
-        </ul>
-      </nav>
+      <nav class="sticky top-0"></nav>
+      <ul class="space-y-2">
+        <li>
+          <a href="index.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测
+          </a>
+        </li>
+        <li>
+          <a href="video.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测
+          </a>
+        </li>
+        <li>
+          <a href="statics.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据分析
+          </a>
+        </li>
+        <li>
+          <a href="ai-analysis.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析
+          </a>
+        </li>
+        <li>
+          <a href="console.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台
+          </a>
+        </li>
+        <li>
+          <a href="settings.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex">
+            <img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置
+          </a>
+        </li>
+      </ul>
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
+        <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
+        <p class="text-xs text-gray-500">汽车零部件检测系统 v2.1.0</p>
+      </div>
     </aside>
 
     <!-- 主内容区域 -->
-    <div class="flex-1 container mx-auto p-2 max-w-10xl">
+    <div class="flex-1 container mx-auto p-4 max-w-10xl">
       <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="text-center py-12 text-gray-500">
-          视频检测功能开发中...
+        <h2 class="text-2xl font-semibold text-center mb-6">视频检测</h2>
+
+        <!-- 视频上传和播放部分 -->
+        <div class="mb-6">
+          <label for="video-upload" class="block text-lg font-medium text-gray-700">上传视频文件</label>
+          <input type="file" id="video-upload" accept="video/*" class="mt-2 mb-4 p-2 border rounded-md w-full" onchange="previewVideo(event)">
+          
+          <!-- 视频播放区域 -->
+          <div class="video-container">
+            <video id="video-preview" class="video-preview" controls></video>
+          </div>
+        </div>
+
+        <!-- 检测按钮 -->
+        <div class="text-center">
+          <button id="detect-button" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300"
+                  onclick="startDetection()">开始检测</button>
+        </div>
+
+        <!-- 检测结果区域 -->
+        <div id="result" class="result-container hidden">
+          <h3 class="font-semibold text-lg">检测结果</h3>
+          <p id="result-text" class="mt-2 text-gray-700">检测进行中...</p>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="renderer.js"></script>
+  <script>
+    // 预览视频
+    function previewVideo(event) {
+      const videoElement = document.getElementById("video-preview");
+      const file = event.target.files[0];
+      
+      if (file) {
+        const objectURL = URL.createObjectURL(file);
+        videoElement.src = objectURL;
+      }
+    }
+
+    // 开始检测
+    function startDetection() {
+      const resultContainer = document.getElementById("result");
+      const resultText = document.getElementById("result-text");
+
+      resultContainer.classList.remove("hidden");
+      resultText.textContent = "视频分析中，请稍等...";
+
+      // 假设这里进行视频检测的逻辑
+      setTimeout(() => {
+        resultText.textContent = "检测完成！视频中未发现缺陷。";  // 这里可以根据检测结果动态更新
+      }, 5000); // 模拟检测延时
+    }
+  </script>
 </body>
 </html>

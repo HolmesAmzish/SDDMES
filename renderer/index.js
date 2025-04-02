@@ -85,11 +85,11 @@ document.getElementById('start-detection').addEventListener('click', async funct
             const resultRow = document.createElement('tr');
             console.log(data.labels);
             resultRow.innerHTML = `
-        <td class="px-4 py-3">${data.name}</td>
-        <td class="px-4 py-3">${parseLabel(data.labels[0])}</td>
-        <td class="px-4 py-3">${data.defect_count}</td>
-        <td class="px-4 py-3">${data.processing_time}s</td>
-      `;
+                <td class="px-4 py-3">${data.name}</td>
+                <td class="px-4 py-3">${parseLabel(data.labels[0])}</td>
+                <td class="px-4 py-3">${data.defect_count}</td>
+                <td class="px-4 py-3">${data.processing_time}s</td>
+            `;
             resultRow.addEventListener('click', function () {
                 document.getElementById('result-image').src = `data:image/jpeg;base64,${data.result_image}`;
             });

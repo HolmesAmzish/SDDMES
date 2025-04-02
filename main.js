@@ -13,8 +13,8 @@ const VALID_CREDENTIALS = {
 
 function createLoginWindow() {
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 600,
+    width: 1024,
+    height: 640,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,

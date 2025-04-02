@@ -5,6 +5,7 @@ import cn.arorms.sdd.dataserver.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -25,9 +26,14 @@ public class ResultController {
         this.resultService = resultService;
     }
 
+    /**
+     * Fetches data from the database by the limits
+     * @param limit: the limit number of database records
+     * @return List<ResultEntity>: List of ResultEntity objects
+     */
     @GetMapping("/getAll")
-    public List<ResultEntity> getAllResultsFromDatabase() {
-        return resultService.getAllResults();
+    public List<ResultEntity> getAllResultsFromDatabase(@RequestParam(defaultValue = "120") int limit) {
+        return resultService.getAllResults(limit);
     }
 
 }

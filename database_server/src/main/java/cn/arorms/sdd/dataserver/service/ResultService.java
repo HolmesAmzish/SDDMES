@@ -20,8 +20,8 @@ public class ResultService {
         this.resultMapper = resultMapper;
     }
 
-    public List<ResultEntity> getAllResults() {
-        return resultMapper.getAllResults();
+    public List<ResultEntity> getAllResults(int limit) {
+        return resultMapper.getAllResults(limit);
     }
 
     public ResultEntity getResultById(int figId) {
