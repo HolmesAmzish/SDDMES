@@ -15,6 +15,39 @@
       max-height: 300px;
       object-fit: contain;
     }
+
+    /* Full Screen Loader Style */
+    #full-screen-loader {
+      display: none;
+      /* Hide by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      /* Dark semi-transparent background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      /* Ensure it's on top of other content */
+    }
+
+    #full-screen-loader svg {
+      animation: spin 1s linear infinite;
+    }
+
+    /* Spin animation for the loader */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -81,7 +114,7 @@
                   class="max-w-full max-h-full mx-auto object-contain">
               </div>
 
-              <p class="mx-4">等待检测结果</p>
+              <p id="result-info" class="mx-4">等待检测结果</p>
             </div>
 
             <!-- Table of Result -->
@@ -92,13 +125,13 @@
                   <thead class="bg-gray-100">
                     <tr>
                       <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
+                        class="px-4 py-3 text-left text-base font-medium text-gray-500 uppercase tracking-wider">名称</th>
                       <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标签</th>
+                        class="px-4 py-3 text-left text-base font-medium text-gray-500 uppercase tracking-wider">标签</th>
                       <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">缺陷数</th>
+                        class="px-4 py-3 text-left text-base font-medium text-gray-500 uppercase tracking-wider">缺陷数</th>
                       <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用时</th>
+                        class="px-4 py-3 text-left text-base font-medium text-gray-500 uppercase tracking-wider">用时</th>
                     </tr>
                   </thead>
                   <tbody id="results-body" class="bg-white divide-y divide-gray-200">
@@ -108,16 +141,24 @@
             </div>
           </div>
 
+          <!-- Loading message -->
+          <div id="loading-message"
+            style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.7); color: white; padding: 20px; border-radius: 5px;">
+            正在等待检测结果...
+          </div>
+
+
           <div class="space-y-6 lg:col-span-1">
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <h2 class="text-xl font-semibold mb-4 text-gray-700">控制面板</h2>
+
               <div class="space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">选择图片文件</label>
                   <div class="flex space-x-2">
                     <input type="file" id="image-input" multiple
                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <button id="browse-image"
+                    <button id="browse-image" hidden
                       class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                       浏览
                     </button>
@@ -129,7 +170,7 @@
                   <div class="flex space-x-2">
                     <input type="file" id="folder-input" webkitdirectory directory
                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <button id="browse-folder"
+                    <button id="browse-folder" hidden
                       class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                       浏览
                     </button>
@@ -153,7 +194,7 @@
 
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">已选择图片</label>
-                  <div id="image-list" class="bg-gray-100 rounded-lg p-4 border border-gray-200 h-96 overflow-auto">
+                  <div id="image-list" class="bg-gray-100 p-4 border border-gray-200 h-96 overflow-auto">
                   </div>
                 </div>
               </div>

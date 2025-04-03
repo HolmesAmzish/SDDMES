@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,22 @@
     .sidebar-button.active {
       @apply bg-blue-600 text-white;
     }
+
     .video-container {
       position: relative;
       width: 100%;
       height: 400px;
       background: #000;
+      border-radius: 8px;
+      overflow: hidden;
     }
+
+    .video-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .result-container {
       margin-top: 20px;
       background: #f9fafb;
@@ -22,12 +33,46 @@
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    .video-preview {
-      max-width: 100%;
-      height: auto;
+
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .control-buttons button {
+      padding: 8px 16px;
+      background-color: #3182ce;
+      color: white;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .control-buttons button:hover {
+      background-color: #2b6cb0;
+    }
+
+    .upload-history {
+      margin-top: 20px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-history ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .upload-history li {
+      padding: 5px 0;
+      border-bottom: 1px solid #e5e7eb;
     }
   </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
   <div class="flex min-h-screen">
     <!-- 侧边栏 -->
@@ -88,24 +133,46 @@
         <!-- 视频上传和播放部分 -->
         <div class="mb-6">
           <label for="video-upload" class="block text-lg font-medium text-gray-700">上传视频文件</label>
-          <input type="file" id="video-upload" accept="video/*" class="mt-2 mb-4 p-2 border rounded-md w-full" onchange="previewVideo(event)">
-          
+          <input type="file" id="video-upload" accept="video/*" class="mt-2 mb-4 p-2 border rounded-md w-full"
+            onchange="previewVideo(event)">
+
           <!-- 视频播放区域 -->
           <div class="video-container">
             <video id="video-preview" class="video-preview" controls></video>
           </div>
         </div>
 
-        <!-- 检测按钮 -->
-        <div class="text-center">
-          <button id="detect-button" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300"
-                  onclick="startDetection()">开始检测</button>
+        <!-- 按钮区域，包含开始检测和控制按钮 -->
+        <div class="flex justify-center space-x-4 mt-4">
+          <!-- 开始检测按钮 -->
+          <button id="detect-button"
+            class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+            onclick="startDetection()">开始检测</button>
+
+          <!-- 控制按钮 -->
+          <button onclick="pauseVideo()"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
+            暂停
+          </button>
+          <button onclick="stopVideo()"
+            class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300">
+            停止
+          </button>
+          <button onclick="replayVideo()"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">
+            重播
+          </button>
         </div>
 
-        <!-- 检测结果区域 -->
-        <div id="result" class="result-container hidden">
-          <h3 class="font-semibold text-lg">检测结果</h3>
-          <p id="result-text" class="mt-2 text-gray-700">检测进行中...</p>
+
+        <!-- 上传历史 -->
+        <div class="upload-history">
+          <h3 class="text-lg font-semibold">上传历史</h3>
+          <ul>
+            <li>视频1.mp4</li>
+            <li>视频2.mp4</li>
+            <li>视频3.mp4</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -116,7 +183,7 @@
     function previewVideo(event) {
       const videoElement = document.getElementById("video-preview");
       const file = event.target.files[0];
-      
+
       if (file) {
         const objectURL = URL.createObjectURL(file);
         videoElement.src = objectURL;
@@ -136,6 +203,27 @@
         resultText.textContent = "检测完成！视频中未发现缺陷。";  // 这里可以根据检测结果动态更新
       }, 5000); // 模拟检测延时
     }
+
+    // 暂停视频
+    function pauseVideo() {
+      const videoElement = document.getElementById("video-preview");
+      videoElement.pause();
+    }
+
+    // 停止视频
+    function stopVideo() {
+      const videoElement = document.getElementById("video-preview");
+      videoElement.pause();
+      videoElement.currentTime = 0;
+    }
+
+    // 重播视频
+    function replayVideo() {
+      const videoElement = document.getElementById("video-preview");
+      videoElement.currentTime = 0;
+      videoElement.play();
+    }
   </script>
 </body>
+
 </html>

@@ -3,10 +3,8 @@ package cn.arorms.sdd.dataserver.controller;
 import cn.arorms.sdd.dataserver.entity.ResultEntity;
 import cn.arorms.sdd.dataserver.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 /**
@@ -34,6 +32,15 @@ public class ResultController {
     @GetMapping("/getAll")
     public List<ResultEntity> getAllResultsFromDatabase(@RequestParam(defaultValue = "120") int limit) {
         return resultService.getAllResults(limit);
+    }
+
+    /**
+     * Insert a list of result into database
+     * @param results: the List of ResultEntity
+     */
+    @PostMapping("/insert")
+    public void insertResults(@RequestBody List<ResultEntity> results) {
+        resultService.insertResults(results);
     }
 
 }

@@ -12,15 +12,26 @@ app = Flask(__name__)
 
 # Initialize models (same as in MainWindow)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
 class_model_path = "models/class/model_class_final 0.85.pth"
 seg_model_path = "models/seg/model_FPN_final 0.899.pth"
 
-# Load models with error handling
-try:
-    class_model = torch.load(class_model_path, map_location=device, weights_only=False)
-    seg_model = torch.load(seg_model_path, map_location=device, weights_only=False)
-except Exception as e:
-    raise RuntimeError(f"Failed to load models: {str(e)}")
+# Load models with error handling (Only load once during app startup)
+class_model = None
+seg_model = None
+
+def load_models():
+    global class_model, seg_model
+    try:
+        class_model = torch.load(class_model_path, map_location=device, weights_only=False)
+        seg_model = torch.load(seg_model_path, map_location=device, weights_only=False)
+        class_model.eval()  # Set model to evaluation mode
+        seg_model.eval()
+    except Exception as e:
+        raise RuntimeError(f"Failed to load models: {str(e)}")
+
+# Load models during startup
+load_models()
 
 class APIResult:
     """Simplified result object for API responses"""
@@ -38,7 +49,7 @@ class APIResult:
             "name": self.name,
             "result_image": base64.b64encode(self.res_fig).decode('utf-8'),
             "processing_time": self.time,
-            "labels": self.label.split(', '),
+            "labels": self.label,
             "defect_count": int(self.num),
             "confidences": [conf for conf in self.dice.split(', ')]
         }
@@ -64,13 +75,14 @@ def detect():
                 return jsonify({"error": f"Invalid image data for {filename}", "details": str(e)}), 400
 
             # Process image
-            predicted_label, segmentation, time_cost = predict(
-                name=filename,
-                image_data=image_data,
-                model_class=class_model,
-                model_seg=seg_model,
-                mode=2
-            )
+            with torch.no_grad():  # Disable gradient calculation during inference
+                predicted_label, segmentation, time_cost = predict(
+                    name=filename,
+                    image_data=image_data,
+                    model_class=class_model,
+                    model_seg=seg_model,
+                    mode=2
+                )
             
             # Generate result image
             res_fig = eda(df=segmentation, data=image_data)
@@ -94,8 +106,13 @@ def detect():
                 "details": str(e)
             })
 
-    return jsonify(results)
+        # Free GPU memory after each image
+        #
+        # WTF is this?
+        #
+        torch.cuda.empty_cache()
 
+    return jsonify(results)
 
 if __name__ == '__main__':
     # Create models directory if not exists

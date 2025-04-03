@@ -13,7 +13,7 @@ const VALID_CREDENTIALS = {
 
 function createLoginWindow() {
   mainWindow = new BrowserWindow({
-    width: 1024,
+    width: 768,
     height: 640,
     autoHideMenuBar: true,
     webPreferences: {
@@ -31,8 +31,22 @@ function createLoginWindow() {
 }
 
 function createMainWindow() {
-  mainWindow.setSize(1400, 840);
-  // mainWindow.maximize();
+  // 获取主屏幕的尺寸
+  const { screen } = require('electron');
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+
+  // 设置窗口大小
+  const winWidth = 1400;
+  const winHeight = 860;
+
+  mainWindow.setSize(winWidth, winHeight);
+
+  // 计算窗口居中的位置
+  const x = Math.floor((screenWidth - winWidth) / 2);
+  const y = Math.floor((screenHeight - winHeight) / 2);
+
+  mainWindow.setBounds({ width: winWidth, height: winHeight, x, y });
+
   mainWindow.loadFile('./view/index.html').then(() => {
     console.log('主窗口加载成功');
   }).catch(err => console.error('加载主窗口失败:', err));
@@ -40,8 +54,8 @@ function createMainWindow() {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools();
   }
-
 }
+
 
 
 app.whenReady().then(() => {
