@@ -8,9 +8,9 @@ import java.util.List;
 
 /**
  * Service class for handling requests related to the results of the analysis.
- * @version 1.1 2025-04-02
+ * @version 1.4 2025-04-05
  * @since 2025-03-12
- * @author Cacciatore`
+ * @author Cacciatore
  */
 @Service
 public class ResultService {
@@ -20,19 +20,21 @@ public class ResultService {
         this.resultMapper = resultMapper;
     }
 
-    /**
-     * Fetch specific number of records from MySQL
-     * @param limit the number of records to fetch
-     * @return List of ResultEntity
-     */
     public List<ResultEntity> getAllResults(int limit) {
         return resultMapper.getAllResults(limit);
     }
 
-    /**
-     * Insert a list of result into database
-     * @param results List of ResultEntity
-     */
+    public List<ResultEntity> getPaginatedResults(int limit, int page) {
+        int offset = (page - 1) * limit;
+        return resultMapper.getPaginatedResults(limit, offset);
+    }
+
+    public List<ResultEntity> searchResults(int limit, int page, String name, Integer num, String startDate, String endDate) {
+        int offset = (page - 1) * limit;
+        return resultMapper.searchResults(limit, offset, name, num, startDate, endDate);
+    }
+
+
     public void insertResults(List<ResultEntity> results) {
         resultMapper.insertResults(results);
     }
@@ -40,4 +42,14 @@ public class ResultService {
     public ResultEntity getResultById(int figId) {
         return resultMapper.getResultById(figId);
     }
+
+    public int getFilteredCount(String name, Integer num, String startDate, String endDate) {
+        return resultMapper.getFilteredCount(name, num, startDate, endDate);
+    }
+
+
+    public int getTotalCount() {
+        return resultMapper.getTotalCount();
+    }
+
 }

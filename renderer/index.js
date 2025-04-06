@@ -82,7 +82,7 @@ document.getElementById('start-detection').addEventListener('click', async funct
         const results = await response.json();
         imageList.length = 0;
         document.getElementById('image-list').innerHTML = '';
-        
+
         // Store results and update UI
         results.forEach(data => {
             if (data.error) {
@@ -103,11 +103,14 @@ document.getElementById('start-detection').addEventListener('click', async funct
                     <span style="width: 10px; height: 10px; background-color: ${color}; border-radius: 50%; display: inline-block;"></span>
                     ${label}
                 </span>`
-            ).join(', ')}
+                    ).join(', ')}
                 </td>
                 <td class="px-4 py-3">${data.defect_count}</td>
                 <td class="px-4 py-3">${data.processing_time}s</td>
             `;
+
+            // console.log('检测结果:', data);
+
             resultRow.addEventListener('click', function () {
                 document.getElementById('result-image').src = `data:image/jpeg;base64,${data.result_image}`;
                 document.getElementById('result-info').innerHTML = `
@@ -148,6 +151,8 @@ document.getElementById('save-results').addEventListener('click', async function
         num: result.defect_count.toString(),
         dice: result.dice || "0" // Use "0" as default if dice is not present
     }));
+
+    // console.log('Results to save:', resultsToSave);
 
     try {
         document.getElementById('save-results').disabled = true;

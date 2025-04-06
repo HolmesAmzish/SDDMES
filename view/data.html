@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>钢材缺陷检测系统 - 缺陷记录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .sidebar-button.active {
+      @apply bg-blue-600 text-white;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      @apply px-3 py-1 rounded-md transition duration-300;
+    }
+
+    .pagination button:disabled {
+      @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+    }
+
+    .pagination button:not(:disabled) {
+      @apply bg-blue-600 text-white hover:bg-blue-700;
+    }
+
+    .table-container {
+      height: 600px;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .fixed-table {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .fixed-table th,
+    .fixed-table td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-container input,
+    .search-container select {
+      @apply border border-gray-300 rounded-md px-2 py-1;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex min-h-screen">
+    <aside class="w-40 bg-white shadow-md p-4 flex-shrink-0 relative">
+      <div class="mb-6">
+        <h1 class="text-center font-bold text-gray-800">工具栏</h1>
+      </div>
+      <nav class="sticky top-0"></nav>
+      <ul class="space-y-2">
+        <li><a href="index.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
+        <li><a href="video.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
+        <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
+        <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
+        <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
+        <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
+      </ul>
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
+        <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
+        <p class="text-xs text-gray-500">汽车零部件检测系统 v2.1.0</p>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 p-4">
+      <div class="bg-white rounded-xl shadow-md mb-4">
+        <div class="p-4">
+          <!-- Search and Filter -->
+          <div class="search-container mb-4">
+            <label>缺陷数量</label>
+            <input type="text" id="num-filter" placeholder="缺陷数" min="0" max="4"
+              class="w-20 text-center border border-gray-200 py-1 rounded-md">
+
+            <label for="">日期范围</label>
+            <div class="border border-gray-200 py-1 rounded-md px-2">
+              <input type="date" id="start-date" placeholder="开始日期">
+              <input type="date" id="end-date" placeholder="结束日期">
+            </div>
+
+            <input type="text" id="name-search" placeholder="按名称搜索"
+              class="w-40 border border-gray-200 rounded py-1 rounded-md px-2">
+            <button class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition duration-300"
+              onclick="fetchData()">搜索</button>
+            <button class="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500 transition duration-300"
+              onclick="resetFilters()">重置</button>
+          </div>
+          <div class="table-container">
+            <table class="w-full border-collapse fixed-table">
+              <thead class="bg-gray-100 text-black">
+                <tr>
+                  <th class="py-2 px-4 text-center">ID</th>
+                  <th class="py-2 px-4 text-center">名称</th>
+                  <th class="py-2 px-4 text-center">日期</th>
+                  <th class="py-2 px-4 text-center">时间</th>
+                  <th class="py-2 px-4 text-center">标签</th>
+                  <th class="py-2 px-4 text-center">缺陷数量</th>
+                </tr>
+              </thead>
+              <tbody id="data-table" class="text-center">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button onclick="changePage(-1)" id="prev-btn">上一页</button>
+        <span>第 <span id="current-page">1</span> 页 / 共 <span id="total-pages">1</span> 页</span>
+        <button onclick="changePage(1)" id="next-btn">下一页</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-4 rounded-lg w-2/3">
+      <h3 class="text-center text-xl mb-3">检测图片</h3>
+      <img id="modal-image" src="" alt="检测图片" class="w-full h-auto mb-3">
+      <button onclick="closeModal()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">关闭</button>
+    </div>
+  </div>
+
+  <script src="../renderer/data.js"></script>
+</body>
+
+</html>

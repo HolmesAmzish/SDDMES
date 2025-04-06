@@ -51,7 +51,7 @@ class APIResult:
             "processing_time": self.time,
             "labels": self.label,
             "defect_count": int(self.num),
-            "confidences": [conf for conf in self.dice.split(', ')]
+            "dice": self.dice
         }
 
 @app.route('/api/detect', methods=['POST'])
@@ -97,6 +97,7 @@ def detect():
                 dice=', '.join(predicted_label['probability_label'].astype(str))
             )
             
+
             # Append result to list
             results.append(result.to_dict())
         
@@ -111,6 +112,8 @@ def detect():
         # WTF is this?
         #
         torch.cuda.empty_cache()
+        if hasattr(torch, 'cuda') and torch.cuda.is_available():
+            torch.cuda.synchronize()
 
     return jsonify(results)
 

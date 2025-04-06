@@ -5,11 +5,13 @@ import cn.arorms.sdd.dataserver.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller class for handling requests related to the results of the analysis.
- * @version 1.0 2025-03-12
+ * @version 1.3 2025-04-05
  * @since 2025-03-12
  * @author Cacciatore
  */
@@ -24,23 +26,43 @@ public class ResultController {
         this.resultService = resultService;
     }
 
-    /**
-     * Fetches data from the database by the limits
-     * @param limit: the limit number of database records
-     * @return List<ResultEntity>: List of ResultEntity objects
-     */
-    @GetMapping("/getAll")
+    @GetMapping("/getRecent")
     public List<ResultEntity> getAllResultsFromDatabase(@RequestParam(defaultValue = "120") int limit) {
         return resultService.getAllResults(limit);
     }
 
-    /**
-     * Insert a list of result into database
-     * @param results: the List of ResultEntity
-     */
+    @GetMapping("/getPaginated")
+    public Map<String, Object> getPaginatedResults(
+            @RequestParam(defaultValue = "30") int limit,
+            @RequestParam(defaultValue = "1") int page) {
+        List<ResultEntity> data = resultService.getPaginatedResults(limit, page);
+        int total = resultService.getTotalCount();
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", data);
+        response.put("total", total);
+        return response;
+    }
+
+    @GetMapping("/search")
+    public Map<String, Object> searchResults(
+            @RequestParam(defaultValue = "30") int limit,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer num,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        List<ResultEntity> data = resultService.searchResults(limit, page, name, num, startDate, endDate);
+        int total = resultService.getFilteredCount(name, num, startDate, endDate); // 下面我们来补这个
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", data);
+        response.put("total", total);
+        return response;
+    }
+
+
     @PostMapping("/insert")
     public void insertResults(@RequestBody List<ResultEntity> results) {
         resultService.insertResults(results);
     }
-
 }

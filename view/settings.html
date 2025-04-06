@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智眸精检高效零件缺陷检测系统 - 设置</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .sidebar-button.active {
+      @apply bg-blue-600 text-white;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex min-h-screen">
+    <aside class="w-40 bg-white shadow-md p-4 flex-shrink-0 relative">
+      <div class="mb-6">
+        <h1 class="text-center font-bold text-gray-800">工具栏</h1>
+      </div>
+      <nav class="sticky top-0"></nav>
+      <ul class="space-y-2">
+        <li><a href="index.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
+        <li><a href="video.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
+        <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
+        <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
+        <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
+        <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
+      </ul>
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
+        <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
+        <p class="text-xs text-gray-500">汽车零部件检测系统 v2.1.0</p>
+      </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <div class="flex-1 container mx-auto p-4 max-w-10xl">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-6 text-gray-700">系统设置</h2>
+        
+        <!-- 设置表单 -->
+        <form class="space-y-6">
+          <!-- 数据服务服务器设置 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="data-server-address" class="block text-sm font-medium text-gray-700 mb-1">
+                数据服务服务器地址
+              </label>
+              <input 
+                type="text" 
+                id="data-server-address" 
+                name="data-server-address" 
+                placeholder="例如: 127.0.0.1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+            <div>
+              <label for="data-server-port" class="block text-sm font-medium text-gray-700 mb-1">
+                数据服务端口
+              </label>
+              <input 
+                type="number" 
+                id="data-server-port" 
+                name="data-server-port" 
+                placeholder="例如: 8080"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+          </div>
+
+          <!-- 图片检测服务器设置 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="image-server-address" class="block text-sm font-medium text-gray-700 mb-1">
+                图片检测服务器地址
+              </label>
+              <input 
+                type="text" 
+                id="image-server-address" 
+                name="image-server-address" 
+                placeholder="例如: 127.0.0.1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+            <div>
+              <label for="image-server-port" class="block text-sm font-medium text-gray-700 mb-1">
+                图片检测端口
+              </label>
+              <input 
+                type="number" 
+                id="image-server-port" 
+                name="image-server-port" 
+                placeholder="例如: 5000"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+          </div>
+
+          <!-- 保存按钮 -->
+          <div class="flex justify-end">
+            <button 
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              保存设置
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

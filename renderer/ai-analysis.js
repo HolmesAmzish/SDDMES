@@ -170,19 +170,62 @@ async function getDataContext() {
     }
 }
 
-// 快速数据概览图表
 async function fetchQuickData() {
     try {
-        const response = await fetch('http://localhost:8080/api/data/getOverview');
-        if (!response.ok) throw new Error('数据获取失败');
+        const response = await fetch('http://localhost:8080/api/data/getRecent');
+        if (!response.ok) throw new Error('获取数据失败');
         const data = await response.json();
 
-        updateQuickLabelChart(data.labelCounts);
-        updateQuickTimeChart(data.timeCounts);
+        const labels = Object.keys(data.defectDistribution || {});
+        const counts = Object.values(data.defectDistribution || {});
+
+        const timeLabels = data.recentStats.map(item => item.time);
+        const timeCounts = data.recentStats.map(item => item.count);
+
+        if (quickLabelChart) quickLabelChart.destroy();
+        if (quickTimeChart) quickTimeChart.destroy();
+
+        quickLabelChart = new Chart(document.getElementById('quickLabelChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '缺陷类型分布',
+                    data: counts,
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        quickTimeChart = new Chart(document.getElementById('quickTimeChart'), {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: '每小时缺陷数',
+                    data: timeCounts,
+                    borderColor: 'rgba(234, 88, 12, 1)',
+                    backgroundColor: 'rgba(234, 88, 12, 0.3)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
     } catch (error) {
-        console.error('快速数据获取失败:', error);
+        showStatus('数据概览加载失败：' + error.message, 'error');
     }
 }
+
 
 function updateQuickLabelChart(labelCounts) {
     const ctx = document.getElementById('quickLabelChart').getContext('2d');
