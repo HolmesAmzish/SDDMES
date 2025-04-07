@@ -4,6 +4,7 @@ import cn.arorms.sdd.dataserver.entity.ResultEntity;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * ResultMapper
@@ -15,13 +16,22 @@ import java.util.List;
 public interface ResultMapper {
 
     // Fetch specific number of result list
-    @Select("SELECT * FROM res ORDER BY date DESC LIMIT #{limit}")
+    @Select("SELECT label, num, time FROM res ORDER BY date DESC LIMIT #{limit}")
     @Results({
             @Result(property = "figId", column = "fig_id") // Mapping fig_id to figId
     })
-    List<ResultEntity> getAllResults(@Param("limit") int limit);
+    List<ResultEntity> getRecentResults(@Param("limit") int limit);
 
-    // Fetch results by pages
+    @SelectProvider(type = ResultSqlProvider.class, method = "getStatisticsByDateSql")
+    List<Map<String, Object>> getStatisticsByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+
+    /**
+     * A simple api that fetch results by pages
+     * @param limit: number of results displayed in every page
+     * @param offset: to calculate the page number
+     * @return List<ResultEntity>
+     */
     @Select("SELECT * FROM res ORDER BY fig_id DESC LIMIT #{limit} OFFSET #{offset}")
     @Results({
             @Result(property = "figId", column = "fig_id") // Mapping fig_id to figId
@@ -53,7 +63,8 @@ public interface ResultMapper {
     // Search results with dynamic conditions
     @SelectProvider(type = ResultSqlProvider.class, method = "searchResultsSql")
     @Results({
-            @Result(property = "figId", column = "fig_id") // Mapping fig_id to figId
+            @Result(property = "figId", column = "fig_id"), // Mapping fig_id to figId
+            @Result(property = "resFig", column = "res_fig")
     })
     List<ResultEntity> searchResults(
             @Param("limit") int limit,

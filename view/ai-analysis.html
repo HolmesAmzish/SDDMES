@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智眸精检高效零件缺陷检测系统 - AI分析</title>
+  <title>智眸精检车辆零部件缺陷检测系统 - AI分析</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -51,6 +51,7 @@
         <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
         <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
         <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li><hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto"></li>
         <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
         <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
       </ul>
@@ -60,12 +61,9 @@
       </div>
     </aside>
 
-    <!-- 主内容区域 - AI分析页面内容 -->
     <div class="flex-1 p-4">
       <h2 class="text-center text-2xl font-semibold mb-5">AI 分析缺陷数据</h2>
-
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- 左侧 - 分析输入区 -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
           <div class="mb-4">
             <label for="promptInput" class="block text-sm font-medium text-gray-700">输入你的分析请求</label>
@@ -78,7 +76,6 @@
             <button id="stopButton" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 hidden"
                     onclick="stopAnalysis()">停止生成</button>
           </div>
-
           <div class="mt-5">
             <h4 class="text-lg font-medium">分析结果</h4>
             <div id="aiResult" class="p-3 bg-gray-50 border rounded-md h-48 overflow-y-auto">
@@ -87,11 +84,11 @@
             </div>
           </div>
           
-          <!-- 状态指示 -->
+          <!-- Status -->
           <div id="status" class="mt-4 text-sm text-gray-500"></div>
         </div>
 
-        <!-- 右侧 - 数据概览 -->
+        <!-- Data review -->
         <div class="bg-white rounded-xl shadow-md p-6">
           <h4 class="text-lg font-medium mb-4">近期数据概览</h4>
           <div class="space-y-4">

@@ -3,6 +3,16 @@ package cn.arorms.sdd.dataserver.mapper;
 import java.util.Map;
 
 public class ResultSqlProvider {
+    public String getStatisticsByDateSql(Map<String, Object> params) {
+        return "SELECT DATE(date) as stat_date, " +
+                "       COUNT(*) as record_count, " +
+                "       SUM(CAST(num AS SIGNED)) as total_num " +
+                "FROM res " +
+                "WHERE date >= #{startDate} AND date <= #{endDate} " +
+                "GROUP BY DATE(date) " +
+                "ORDER BY stat_date ASC";
+    }
+
     public String searchResultsSql(Map<String, Object> params) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM res WHERE 1=1");

@@ -4,9 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>钢材缺陷检测系统 - 缺陷记录</title>
+  <title>智眸精检车辆零部件缺陷检测系统 - 缺陷记录</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* 原有样式保持不变 */
     .sidebar-button.active {
       @apply bg-blue-600 text-white;
     }
@@ -32,7 +33,7 @@
     }
 
     .table-container {
-      height: 600px;
+      height: 560px;
       max-width: 100%;
       overflow-x: auto;
       overflow-y: auto;
@@ -61,12 +62,63 @@
     .search-container select {
       @apply border border-gray-300 rounded-md px-2 py-1;
     }
+
+    .tag-checkbox {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      position: relative;
+      margin-right: 8px;
+    }
+
+    .tag-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .tag-checkbox[value="1"] {
+      border-color: rgba(255, 99, 132, 0.6);
+    }
+    .tag-checkbox[value="1"]:checked::after {
+      background-color: rgba(255, 99, 132, 0.6);
+    }
+
+    .tag-checkbox[value="2"] {
+      border-color: rgba(54, 162, 235, 0.6);
+    }
+    .tag-checkbox[value="2"]:checked::after {
+      background-color: rgba(54, 162, 235, 0.6);
+    }
+
+    .tag-checkbox[value="3"] {
+      border-color: rgba(255, 206, 86, 0.6);
+    }
+    .tag-checkbox[value="3"]:checked::after {
+      background-color: rgba(255, 206, 86, 0.6);
+    }
+
+    .tag-checkbox[value="4"] {
+      border-color: rgba(75, 192, 192, 0.6);
+    }
+    .tag-checkbox[value="4"]:checked::after {
+      background-color: rgba(75, 192, 192, 0.6);
+    }
   </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
   <div class="flex min-h-screen">
     <aside class="w-40 bg-white shadow-md p-4 flex-shrink-0 relative">
+      <!-- Sidebar -->
       <div class="mb-6">
         <h1 class="text-center font-bold text-gray-800">工具栏</h1>
       </div>
@@ -77,6 +129,7 @@
         <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
         <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
         <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li><hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto"></li>
         <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
         <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
       </ul>
@@ -90,25 +143,41 @@
     <div class="flex-1 p-4">
       <div class="bg-white rounded-xl shadow-md mb-4">
         <div class="p-4">
+          <h2 class="text-2xl font-semibold text-center mb-4">结果查询</h2>
           <!-- Search and Filter -->
-          <div class="search-container mb-4">
-            <label>缺陷数量</label>
-            <input type="text" id="num-filter" placeholder="缺陷数" min="0" max="4"
-              class="w-20 text-center border border-gray-200 py-1 rounded-md">
-
-            <label for="">日期范围</label>
-            <div class="border border-gray-200 py-1 rounded-md px-2">
-              <input type="date" id="start-date" placeholder="开始日期">
-              <input type="date" id="end-date" placeholder="结束日期">
+          <div class="mb-4 border">
+            <div class="search-container m-4 ">
+              <label>缺陷数量</label>
+              <input type="text" id="num-filter" placeholder="缺陷数" min="0" max="4"
+                class="w-20 text-center border border-gray-200 py-1 rounded-md">
+  
+              <label for="">日期范围</label>
+              <div class="border border-gray-200 py-1 rounded-md px-2">
+                <input type="date" id="start-date" placeholder="开始日期">
+                <input type="date" id="end-date" placeholder="结束日期">
+              </div>
+  
+              <input type="text" id="name-search" placeholder="按名称搜索"
+                class="w-40 border border-gray-200 rounded py-1 rounded-md px-2">
+              <button class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition duration-300"
+                onclick="fetchData()">搜索</button>
+              <button class="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500 transition duration-300"
+                onclick="resetFilters()">重置</button>
             </div>
-
-            <input type="text" id="name-search" placeholder="按名称搜索"
-              class="w-40 border border-gray-200 rounded py-1 rounded-md px-2">
-            <button class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition duration-300"
-              onclick="fetchData()">搜索</button>
-            <button class="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500 transition duration-300"
-              onclick="resetFilters()">重置</button>
+  
+            <div class="m-4 flex gap-6" id="tag-filter">
+              <label class="flex items-center"><input type="checkbox" value="1" class="tag-checkbox">夹杂物</label>
+              <label class="flex items-center"><input type="checkbox" value="2" class="tag-checkbox">补丁</label>
+              <label class="flex items-center"><input type="checkbox" value="3" class="tag-checkbox">划痕</label>
+              <label class="flex items-center"><input type="checkbox" value="4" class="tag-checkbox">其他</label>
+              
+              <label class="flex items-center">
+                <span class="mr-2">特定日期:</span>
+                <input type="date" id="specific-date" class="border border-gray-300 rounded-md px-2 py-1">
+              </label>
+            </div>
           </div>
+        
           <div class="table-container">
             <table class="w-full border-collapse fixed-table">
               <thead class="bg-gray-100 text-black">
@@ -127,7 +196,6 @@
           </div>
         </div>
       </div>
-
       <!-- Pagination -->
       <div class="pagination">
         <button onclick="changePage(-1)" id="prev-btn">上一页</button>
@@ -136,7 +204,6 @@
       </div>
     </div>
   </div>
-
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-4 rounded-lg w-2/3">
       <h3 class="text-center text-xl mb-3">检测图片</h3>
@@ -144,8 +211,6 @@
       <button onclick="closeModal()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">关闭</button>
     </div>
   </div>
-
   <script src="../renderer/data.js"></script>
 </body>
-
 </html>

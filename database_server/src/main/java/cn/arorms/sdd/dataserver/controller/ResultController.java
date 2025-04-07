@@ -27,9 +27,18 @@ public class ResultController {
     }
 
     @GetMapping("/getRecent")
-    public List<ResultEntity> getAllResultsFromDatabase(@RequestParam(defaultValue = "120") int limit) {
-        return resultService.getAllResults(limit);
+    public List<ResultEntity> getRecentResultsFromDatabase(@RequestParam(defaultValue = "120") int limit) {
+        return resultService.getRecentResults(limit);
     }
+
+    @GetMapping("/statByDate")
+    public List<Map<String, Object>> getStatisticsByDate(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        return resultService.getStatisticsByDate(startDate, endDate);
+    }
+
 
     @GetMapping("/getPaginated")
     public Map<String, Object> getPaginatedResults(

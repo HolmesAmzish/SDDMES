@@ -117,5 +117,62 @@ function resetFilters() {
     fetchData();
 }
 
+// 获取 DOM 元素
+const numFilter = document.getElementById('num-filter');
+const tagCheckboxes = document.querySelectorAll('.tag-checkbox');
+const startDate = document.getElementById('start-date');
+const endDate = document.getElementById('end-date');
+const specificDate = document.getElementById('specific-date');
+
+// 更新缺陷数量并控制输入框状态
+function updateDefectCount() {
+    const checkedCount = Array.from(tagCheckboxes).filter(checkbox => checkbox.checked).length;
+
+    if (checkedCount > 0) {
+        numFilter.disabled = true;
+        numFilter.value = checkedCount;
+    } else {
+        numFilter.disabled = false;
+        numFilter.value = '';
+    }
+}
+
+// 特定日期变化时清空日期范围
+function handleSpecificDateChange() {
+    if (specificDate.value) {
+        startDate.value = '';
+        endDate.value = '';
+    }
+}
+
+// 日期范围变化时清空特定日期
+function handleDateRangeChange() {
+    if (startDate.value || endDate.value) {
+        specificDate.value = '';
+    }
+}
+
+// 为每个复选框添加事件监听器
+tagCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateDefectCount);
+});
+
+// 为日期相关输入框添加事件监听器
+specificDate.addEventListener('change', handleSpecificDateChange);
+startDate.addEventListener('change', handleDateRangeChange);
+endDate.addEventListener('change', handleDateRangeChange);
+
+// 重置过滤器时同时重置标签、缺陷数量和日期
+function resetFilters() {
+    tagCheckboxes.forEach(checkbox => checkbox.checked = false);
+    numFilter.disabled = false;
+    numFilter.value = '';
+    startDate.value = '';
+    endDate.value = '';
+    specificDate.value = '';
+    document.getElementById('name-search').value = '';
+    fetchData(); // 假设 fetchData 是已定义的函数
+}
+
 // Call fetchData on initial load
 fetchData();

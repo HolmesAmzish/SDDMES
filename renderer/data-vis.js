@@ -1,6 +1,8 @@
 let labelChartInstance = null;
 let timeChartInstance = null;
 let numChartInstance = null;
+let recordChartInstance = null;
+let totalNumChartInstance = null;
 
 function parseTimeToSeconds(timeStr) {
     return Number(timeStr);
@@ -42,19 +44,15 @@ function parseLabel(labelStr) {
 }
 
 async function fetchData() {
-    const tableBody = document.getElementById('data-table');
-    tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-2">加载中...</td></tr>';
 
     try {
-        // Fetch 100 records of data from the backend
-        const response = await fetch('http://localhost:8080/api/data/getAll?limit=100', {
+        const response = await fetch('http://localhost:8080/api/data/getRecent?limit=2000', {
             method: 'GET',
             mode: 'cors',
         });
         if (!response.ok) throw new Error('数据获取失败');
         const data = await response.json();
         console.log('后端返回的数据:', data);
-        tableBody.innerHTML = '';
 
         let labelCounts = { "夹杂物": 0, "补丁": 0, "划痕": 0, "其他": 0 };
         let timeCounts = { "0.05-0.07": 0, "0.07-0.09": 0, "0.09-0.11": 0, "0.11-0.13": 0, "0.13-0.15": 0 };
@@ -85,55 +83,15 @@ async function fetchData() {
             } else {
                 timeRange = '超出范围';
             }
-
-            let row = `<tr data-image-path="../data/sample_folder/0a9cbb927.jpg">
-                <td class="py-2 px-4">${item.figId}</td>
-                <td class="py-2 px-4">${item.name}</td>
-                <td class="py-2 px-4">${formatDate(item.date)}</td>
-                <td class="py-2 px-4">${item.time}</td>
-                <td class="py-2 px-4">
-                    ${detectedLabels.map(({ label, color }) => 
-                        `<span style="display: inline-flex; align-items: center; gap: 5px;">
-                            <span style="width: 10px; height: 10px; background-color: ${color}; border-radius: 50%; display: inline-block;"></span>
-                            ${label}
-                        </span>`
-                    ).join(', ')}
-                </td>
-                <td class="py-2 px-4">${item.dice}</td>
-            </tr>`;
-            tableBody.innerHTML += row;
         });
 
         updateLabelChart(labelCounts);
         updateTimeChart(timeCounts);
         updateNumChart(numCounts);
 
-        // Add event listener for double-clicking on a row
-        const rows = tableBody.querySelectorAll('tr');
-        rows.forEach(row => {
-            row.addEventListener('dblclick', function() {
-                const imagePath = row.getAttribute('data-image-path');
-                displayImage(imagePath);
-            });
-        });
-
     } catch (error) {
         console.error(error);
-        tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red-500 py-2">数据加载失败</td></tr>';
     }
-}
-
-function displayImage(imagePath) {
-    const modal = document.getElementById('modal');
-    const modalImage = document.getElementById('modal-image');
-
-    modalImage.src = imagePath;  // 设置图片路径
-    modal.classList.remove('hidden');  // 显示模态框
-}
-
-function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.classList.add('hidden');  // 关闭模态框
 }
 
 function updateLabelChart(labelCounts) {
@@ -261,4 +219,90 @@ function updateNumChart(numCounts) {
     });
 }
 
+async function fetchStatByDate() {
+    try {
+      const res = await fetch("http://localhost:8080/api/data/statByDate");
+      const statData = await res.json();
+  
+      const today = new Date();
+      const dateList = [];
+      const recordData = [];
+      const totalNumData = [];
+  
+      for (let i = 14; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dateStr = d.toISOString().slice(0, 10);
+        dateList.push(dateStr);
+  
+        const match = statData.find(item => item.stat_date === dateStr);
+        recordData.push(match ? match.record_count : 0);
+        totalNumData.push(match ? match.total_num : 0);
+      }
+  
+      updateRecordChart(dateList, recordData);
+      updateTotalNumChart(dateList, totalNumData);
+    } catch (e) {
+      console.error("fetchStatByDate error:", e);
+    }
+  }
+  
+  function updateRecordChart(labels, data) {
+    const ctx = document.getElementById('recordChart').getContext('2d');
+    if (recordChartInstance) recordChartInstance.destroy();
+  
+    recordChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'record_count 最近15天',
+          data: data,
+          backgroundColor: 'rgba(153, 102, 255, 0.6)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  }
+  
+  function updateTotalNumChart(labels, data) {
+    const ctx = document.getElementById('totalNumChart').getContext('2d');
+    if (totalNumChartInstance) totalNumChartInstance.destroy();
+  
+    totalNumChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'total_num 变化趋势',
+          data: data,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  }
+
 document.addEventListener('DOMContentLoaded', fetchData);
+document.addEventListener("DOMContentLoaded", fetchStatByDate);

@@ -8,7 +8,6 @@ let quickLabelChart, quickTimeChart;
 let abortController = null;
 let isStreaming = false;
 
-// 初始化Marked.js
 marked.setOptions({
     breaks: true,
     gfm: true
@@ -21,7 +20,6 @@ async function analyzeData() {
         return;
     }
 
-    // 初始化状态
     aiContent.innerHTML = '';
     typingIndicator.classList.remove('hidden');
     showStatus('AI 正在分析中...', 'processing');
@@ -31,13 +29,10 @@ async function analyzeData() {
     abortController = new AbortController();
 
     try {
-        // 获取当前数据上下文
         const context = await getDataContext();
 
-        // 构建完整的提示词
         const fullPrompt = buildFullPrompt(prompt, context);
 
-        // 调用AI API
         await callAIStreaming(fullPrompt);
 
         showStatus('分析完成！', 'success');
@@ -84,7 +79,6 @@ async function callAIStreaming(prompt) {
         throw new Error(`AI 请求失败: ${response.status} - ${errorText}`);
     }
 
-    // 处理流式响应
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let result = '';
@@ -150,24 +144,6 @@ function showStatus(message, type = 'info') {
             type === 'success' ? 'text-green-500' :
                 type === 'warning' ? 'text-yellow-500' :
                     'text-gray-500');
-}
-
-// 获取当前数据上下文（示例）
-async function getDataContext() {
-    try {
-        const response = await fetch('http://localhost:8080/api/data/getRecent');
-        if (!response.ok) return null;
-        const data = await response.json();
-
-        // 转换数据格式
-        return {
-            totalSamples: data.length,
-            mainDefects: Object.keys(data.defectDistribution),
-            avgDetectionTime: data.avgProcessingTime
-        };
-    } catch {
-        return null;
-    }
 }
 
 async function fetchQuickData() {
