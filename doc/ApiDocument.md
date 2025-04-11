@@ -4,8 +4,26 @@
 
 接收一批图片并返回模型输出。
 
+```http
+POST /api/detect/
 ```
-/api/detect/
+
+表单数据：
+
+- images: 图片列表，包含图片二进制流与文件名信息。
+
+```json
+[
+    {
+        "defect_count": 缺陷数量,
+        "dice": 分类置信度,
+        "labels": 分类标签,
+        "name": 文件名,
+        "processing_time": 处理时间,
+        "result_image": 图片编码
+    },
+    ...
+]
 ```
 
 
@@ -16,7 +34,7 @@
 
 获取最近几条记录，返回结果实体。**数据可视化分析**和**ai分析**调用这个 api 进行进一步数据处理。
 
-```
+```http
 GET /api/data/getRecent
 ```
 
@@ -43,8 +61,8 @@ GET /api/data/getRecent
 
 获取最近 api 调用量，统计记录数量和检查出的缺陷数量。
 
-```
-/api/data/statByDate
+```http
+GET /api/data/statByDate
 ```
 
 参数：两个都可不填，默认从当前时间往后 15 天
@@ -67,8 +85,8 @@ GET /api/data/getRecent
 
 简单的分页查询页码，每页显示特定数量的结果，本 api 被搜索功能代替。
 
-```
-/api/data/getPaginated
+```http
+GET /api/data/getPaginated
 ```
 
 参数：
@@ -79,8 +97,8 @@ GET /api/data/getRecent
 
 通过条件筛选结果，同时支持分页显示。
 
-```
-/api/data/search
+```http
+GET /api/data/search
 ```
 
 参数：
@@ -90,3 +108,33 @@ GET /api/data/getRecent
 - num： 可选，选后添加匹配指定缺陷数量的条件
 - startDate： 可选，起始日期
 - endDate: 可选，结束日期
+
+返回：
+
+```json
+{
+  "total": 总数,
+  "data": [
+    {
+      "figId": 结果id,
+      "name": 图片名称,
+      "resFig": null,
+      "date": 日期,
+      "time": 时间,
+      "label": 分类标签,
+      "num": 缺陷数量,
+      "dice": null
+    },
+    ...
+  ]
+}
+```
+
+
+
+# AI 
+
+```
+sk-c6c11ae0a25a4e1ea64ff97e98d4057a
+```
+

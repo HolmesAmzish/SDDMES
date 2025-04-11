@@ -70,6 +70,10 @@ function updateTable(data) {
     data.forEach(result => {
         const detectedLabels = parseLabel(result.label);
         const row = document.createElement("tr");
+        row.className = "hover:bg-gray-50 cursor-pointer"; // 添加悬停效果和指针
+        row.setAttribute("data-fig-id", result.figId); // 存储figId
+        row.addEventListener("dblclick", () => openImageModal(result.figId)); // 双击事件
+        
         row.innerHTML = `
           <td class="py-2 px-4">${result.figId}</td>
           <td class="py-2 px-4">${result.name}</td>
@@ -87,6 +91,53 @@ function updateTable(data) {
         `;
         tableBody.appendChild(row);
     });
+}
+
+// 打开模态框并加载图片
+function openImageModal(figId) {
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modal-image");
+    
+    // 显示加载状态
+    modalImage.src = "";
+    modalImage.alt = "加载中...";
+    modal.classList.remove("hidden");
+    
+    // 获取图片
+    fetch(`http://localhost:8080/api/data/getResFig?id=${figId}`, {
+        headers: {
+            'Accept': 'image/png' // 告诉服务器我们期望接收PNG图片
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('图片加载失败');
+        }
+        return response.blob(); // 获取二进制数据
+    })
+    .then(blob => {
+        // 创建图片URL
+        const imageUrl = URL.createObjectURL(blob);
+        modalImage.src = imageUrl;
+        modalImage.alt = `检测结果图片 ${figId}`;
+    })
+    .catch(error => {
+        console.error("获取图片失败:", error);
+        modalImage.alt = "图片加载失败";
+    });
+}
+
+// 关闭模态框
+function closeModal() {
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modal-image");
+    
+    // 释放图片URL
+    if (modalImage.src) {
+        URL.revokeObjectURL(modalImage.src);
+    }
+    
+    modal.classList.add("hidden");
 }
 
 function updatePagination() {

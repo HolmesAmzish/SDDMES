@@ -4,16 +4,80 @@ const promptInput = document.getElementById('promptInput');
 const aiContent = document.getElementById('aiContent');
 const typingIndicator = document.getElementById('typingIndicator');
 const statusDiv = document.getElementById('status');
-let quickLabelChart, quickTimeChart;
 let abortController = null;
 let isStreaming = false;
+let aiPrompt = '';
 
 marked.setOptions({
     breaks: true,
     gfm: true
 });
 
-async function analyzeData() {
+// 显示状态
+function showStatus(message, type = 'info') {
+    statusDiv.textContent = message;
+    statusDiv.className = 'mt-4 text-sm ' +
+        (type === 'error' ? 'text-red-500' :
+            type === 'success' ? 'text-green-500' :
+                type === 'warning' ? 'text-yellow-500' :
+                    'text-gray-500');
+}
+
+// 解析标签
+function parseLabel(labelStr) {
+    const defectDict = ["夹杂物", "补丁", "划痕", "其他"];
+    const boolArray = labelStr.replace(/\[|\]/g, '').trim().split(/\s+/).map(v => v.toLowerCase() === 'true');
+    const labels = boolArray.map((val, index) => val ? defectDict[index] : null).filter(v => v !== null);
+    return labels;
+}
+
+// 从后端获取最近的数据
+async function fetchQuickData() {
+    try {
+        const response = await fetch('http://localhost:8080/api/data/getRecent?limit=200');
+        if (!response.ok) throw new Error('获取数据失败');
+        const data = await response.json();
+
+        console.log('获取到的数据:', data);
+
+        // 处理并显示数据
+        processAndDisplayData(data);
+
+    } catch (error) {
+        console.error('获取数据错误:', error);
+        showStatus('获取数据失败，请稍后重试。', 'error');
+    }
+}
+
+// 读取提示词文件内容
+const AITextPrompt = '你是一个钢铁缺陷分析专家，请根据以下数据对钢铁缺陷检测结果进行深入分析，并提供以下内容：1. **主要发现**：概述检测到的主要缺陷类型，以及它们在样本中的出现频率。指出是否存在异常的缺陷模式或趋势。2. **缺陷分布趋势**：分析各类缺陷在不同时间段或不同检测样本中的分布情况，找出趋势或周期性变化。如果有多个缺陷类型，比较它们之间的相对频率。3. **缺陷类型对比**：将各类缺陷进行对比，指出其中哪些缺陷类型最为常见，哪些可能导致生产问题或影响钢材的质量。4. **检测时间分析**：分析每个缺陷的检测时间，查找检测速度或时长是否存在趋势，例如检测时间较长的缺陷类型。5. **相关建议**：基于缺陷分布趋势和类型对生产过程提出改进建议，例如优化检测流程，改进质量控制等。6. **质量控制建议**：针对发现的主要缺陷类型，提出有效的质量控制和改进措施。请使用简洁易懂的语言，确保分析结果能够为生产线管理人员或质量控制人员提供实用的建议。使用Markdown格式呈现结果，包含标题、子标题、列表等。-> % curl http://localhost:8080/api/data/getRecent\?limit\=100[{"figId":0,"name":null,"resFig":null,"date":null,"time":"1.90","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"1.91","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True  True False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"2.17","label":"[ True  True False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True  True False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"1.63","label":"[ True  True False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"2.17","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True  True False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False False False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.10","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"2.27","label":"[ True  True False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.09","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"2","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False False False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True  True  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"2","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True  True  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True  True  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True  True]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True  True]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[ True False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True  True]","num":"1","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"0","dice":null},{"figId":0,"name":null,"resFig":null,"date":null,"time":"0.08","label":"[False False  True False]","num":"1","dice":null}]%  其中label四个标签分别代表了加杂物，补丁，划痕和其他，顺序一致，num代表每个记录的缺陷数量，time代表检测使用时间的秒数。请分析这一批钢铁缺陷检测数据.';
+
+
+// 处理并显示数据
+function processAndDisplayData(data) {
+    const defectLabels = data.map(item => parseLabel(item.label).join(','));  // 将标签转换为字符串
+    const defectTimes = data.map(item => item.time);  // 获取时间数据
+
+    // 生成AI的请求内容
+    const aiPromptWithData = generateAIPrompt(defectLabels, defectTimes);
+    analyzeData(aiPromptWithData);
+}
+
+// 生成AI分析提示词
+function generateAIPrompt(defectLabels, defectTimes) {
+    const defectSummary = defectLabels.join(', ');
+    const timeSummary = defectTimes.join(', ');
+
+    return `${aiPrompt}\n\n根据以下数据分析钢材缺陷趋势和问题：
+
+缺陷类型：\n${defectSummary}
+检测时间：\n${timeSummary}
+
+请分析缺陷的趋势并提供改进建议。`;
+}
+
+// AI分析数据
+async function analyzeData(aiPrompt) {
     const prompt = promptInput.value.trim();
     if (!prompt) {
         showStatus('请输入分析请求', 'error');
@@ -29,12 +93,8 @@ async function analyzeData() {
     abortController = new AbortController();
 
     try {
-        const context = await getDataContext();
-
-        const fullPrompt = buildFullPrompt(prompt, context);
-
+        const fullPrompt = buildFullPrompt(prompt, aiPrompt);
         await callAIStreaming(fullPrompt);
-
         showStatus('分析完成！', 'success');
     } catch (error) {
         if (error.name !== 'AbortError') {
@@ -53,12 +113,14 @@ async function analyzeData() {
     }
 }
 
+// 停止分析
 function stopAnalysis() {
     if (isStreaming && abortController) {
         abortController.abort();
     }
 }
 
+// 与AI通信，获取分析结果
 async function callAIStreaming(prompt) {
     const response = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
@@ -102,7 +164,6 @@ async function callAIStreaming(prompt) {
                     if (content) {
                         result += content;
                         aiContent.innerHTML = marked.parse(result);
-                        // 自动滚动到底部
                         aiContent.scrollIntoView({ behavior: 'smooth', block: 'end' });
                     }
                 } catch (e) {
@@ -113,155 +174,17 @@ async function callAIStreaming(prompt) {
     }
 }
 
-function buildFullPrompt(userPrompt, context) {
-    // 基础系统提示
-    let prompt = `你是一个钢材缺陷分析专家，请根据用户请求分析钢材缺陷数据。\n\n`;
-
-    // 添加数据上下文
-    if (context) {
-        prompt += `当前数据概况:\n`;
-        prompt += `- 总检测样本数: ${context.totalSamples}\n`;
-        prompt += `- 主要缺陷类型: ${context.mainDefects.join(', ')}\n`;
-        prompt += `- 平均检测时间: ${context.avgDetectionTime}秒\n\n`;
-    }
-
-    // 添加用户请求
-    prompt += `用户请求:\n${userPrompt}\n\n`;
-    prompt += `请用专业但易懂的语言回答，使用Markdown格式，包含以下部分:\n`;
-    prompt += `1. 主要发现\n2. 趋势分析\n3. 改进建议`;
-
-    return prompt;
+// 构建完整的提示词
+function buildFullPrompt(userPrompt, aiDataPrompt) {
+    return `${AITextPrompt}\n\n用户请求:\n${userPrompt}`;
 }
 
+// 获取API密钥
 function getApiKey() {
     return localStorage.getItem('ai_api_key') || 'sk-c6c11ae0a25a4e1ea64ff97e98d4057a';
-}
-
-function showStatus(message, type = 'info') {
-    statusDiv.textContent = message;
-    statusDiv.className = 'mt-4 text-sm ' +
-        (type === 'error' ? 'text-red-500' :
-            type === 'success' ? 'text-green-500' :
-                type === 'warning' ? 'text-yellow-500' :
-                    'text-gray-500');
-}
-
-async function fetchQuickData() {
-    try {
-        const response = await fetch('http://localhost:8080/api/data/getRecent');
-        if (!response.ok) throw new Error('获取数据失败');
-        const data = await response.json();
-
-        const labels = Object.keys(data.defectDistribution || {});
-        const counts = Object.values(data.defectDistribution || {});
-
-        const timeLabels = data.recentStats.map(item => item.time);
-        const timeCounts = data.recentStats.map(item => item.count);
-
-        if (quickLabelChart) quickLabelChart.destroy();
-        if (quickTimeChart) quickTimeChart.destroy();
-
-        quickLabelChart = new Chart(document.getElementById('quickLabelChart'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '缺陷类型分布',
-                    data: counts,
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        quickTimeChart = new Chart(document.getElementById('quickTimeChart'), {
-            type: 'line',
-            data: {
-                labels: timeLabels,
-                datasets: [{
-                    label: '每小时缺陷数',
-                    data: timeCounts,
-                    borderColor: 'rgba(234, 88, 12, 1)',
-                    backgroundColor: 'rgba(234, 88, 12, 0.3)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-    } catch (error) {
-        showStatus('数据概览加载失败：' + error.message, 'error');
-    }
-}
-
-
-function updateQuickLabelChart(labelCounts) {
-    const ctx = document.getElementById('quickLabelChart').getContext('2d');
-    if (quickLabelChart) quickLabelChart.destroy();
-
-    quickLabelChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(labelCounts),
-            datasets: [{
-                data: Object.values(labelCounts),
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-}
-
-function updateQuickTimeChart(timeCounts) {
-    const ctx = document.getElementById('quickTimeChart').getContext('2d');
-    if (quickTimeChart) quickTimeChart.destroy();
-
-    quickTimeChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(timeCounts),
-            datasets: [{
-                label: '检测时间分布',
-                data: Object.values(timeCounts),
-                backgroundColor: 'rgba(75, 192, 192, 0.6)'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
-        }
-    });
 }
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', () => {
     fetchQuickData();
-
-    // 示例提示词
-    promptInput.value = "请分析最近一周的缺陷数据，指出主要问题类型和变化趋势，并提出改进建议。";
-
-    // 初始化Marked.js渲染器
-    const renderer = new marked.Renderer();
-    renderer.code = (code, language) => {
-        return `<pre><code class="language-${language}">${code}</code></pre>`;
-    };
-    marked.setOptions({ renderer });
 });

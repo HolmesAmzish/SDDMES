@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智眸精检车辆零部件缺陷检测系统 - 缺陷记录</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>智眸精检 车辆零部件缺陷检测系统 - 数据查询</title>
+  <script src="tailwind.es"></script>
   <style>
     /* 原有样式保持不变 */
     .sidebar-button.active {
@@ -88,6 +88,7 @@
     .tag-checkbox[value="1"] {
       border-color: rgba(255, 99, 132, 0.6);
     }
+
     .tag-checkbox[value="1"]:checked::after {
       background-color: rgba(255, 99, 132, 0.6);
     }
@@ -95,6 +96,7 @@
     .tag-checkbox[value="2"] {
       border-color: rgba(54, 162, 235, 0.6);
     }
+
     .tag-checkbox[value="2"]:checked::after {
       background-color: rgba(54, 162, 235, 0.6);
     }
@@ -102,6 +104,7 @@
     .tag-checkbox[value="3"] {
       border-color: rgba(255, 206, 86, 0.6);
     }
+
     .tag-checkbox[value="3"]:checked::after {
       background-color: rgba(255, 206, 86, 0.6);
     }
@@ -109,8 +112,24 @@
     .tag-checkbox[value="4"] {
       border-color: rgba(75, 192, 192, 0.6);
     }
+
     .tag-checkbox[value="4"]:checked::after {
       background-color: rgba(75, 192, 192, 0.6);
+    }
+
+    #modal {
+      z-index: 1000;
+    }
+
+    #modal-image {
+      max-height: 70vh;
+      object-fit: contain;
+    }
+
+    #modal div {
+      max-width: 90%;
+      max-height: 90vh;
+      overflow: auto;
     }
   </style>
 </head>
@@ -124,14 +143,30 @@
       </div>
       <nav class="sticky top-0"></nav>
       <ul class="space-y-2">
-        <li><a href="index.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
-        <li><a href="video.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
-        <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
-        <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
-        <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
-        <li><hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto"></li>
-        <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
-        <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
+        <li><a href="index.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
+        <li><a href="video.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
+        <li><a href="data.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
+        <li><a href="data-vis.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
+        <li><a href="ai-analysis.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li>
+          <hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto">
+        </li>
+        <li><a href="console.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
+        <li><a href="settings.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
       </ul>
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
         <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
@@ -143,20 +178,20 @@
     <div class="flex-1 p-4">
       <div class="bg-white rounded-xl shadow-md mb-4">
         <div class="p-4">
-          <h2 class="text-2xl font-semibold text-center mb-4">结果查询</h2>
+          <h2 class="text-2xl font-semibold text-center mb-4">数据查询</h2>
           <!-- Search and Filter -->
           <div class="mb-4 border">
             <div class="search-container m-4 ">
               <label>缺陷数量</label>
               <input type="text" id="num-filter" placeholder="缺陷数" min="0" max="4"
                 class="w-20 text-center border border-gray-200 py-1 rounded-md">
-  
+
               <label for="">日期范围</label>
               <div class="border border-gray-200 py-1 rounded-md px-2">
                 <input type="date" id="start-date" placeholder="开始日期">
                 <input type="date" id="end-date" placeholder="结束日期">
               </div>
-  
+
               <input type="text" id="name-search" placeholder="按名称搜索"
                 class="w-40 border border-gray-200 rounded py-1 rounded-md px-2">
               <button class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition duration-300"
@@ -164,20 +199,20 @@
               <button class="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500 transition duration-300"
                 onclick="resetFilters()">重置</button>
             </div>
-  
+
             <div class="m-4 flex gap-6" id="tag-filter">
               <label class="flex items-center"><input type="checkbox" value="1" class="tag-checkbox">夹杂物</label>
               <label class="flex items-center"><input type="checkbox" value="2" class="tag-checkbox">补丁</label>
               <label class="flex items-center"><input type="checkbox" value="3" class="tag-checkbox">划痕</label>
               <label class="flex items-center"><input type="checkbox" value="4" class="tag-checkbox">其他</label>
-              
+
               <label class="flex items-center">
                 <span class="mr-2">特定日期:</span>
                 <input type="date" id="specific-date" class="border border-gray-300 rounded-md px-2 py-1">
               </label>
             </div>
           </div>
-        
+
           <div class="table-container">
             <table class="w-full border-collapse fixed-table">
               <thead class="bg-gray-100 text-black">
@@ -213,4 +248,5 @@
   </div>
   <script src="../renderer/data.js"></script>
 </body>
+
 </html>

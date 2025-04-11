@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智眸精检车辆零部件缺陷检测系统 - 视频检测</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>智眸精检 车辆零部件缺陷检测系统 - 视频检测</title>
+  <script src="tailwind.es"></script>
   <style>
     .sidebar-button.active {
       @apply bg-blue-600 text-white;
@@ -18,12 +18,25 @@
       background: #000;
       border-radius: 8px;
       overflow: hidden;
+      /* 确保超出部分不显示 */
     }
 
     .video-preview {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
+      /* 改为cover以确保填充整个容器 */
+      transform: scale(1);
+      /* 放大150% */
+      transform-origin: center center;
+      /* 从中心点放大 */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      /* 居中并放大 */
+      display: none;
+      /* 初始隐藏视频预览 */
     }
 
     .result-container {
@@ -32,6 +45,8 @@
       padding: 10px;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: none;
+      /* 初始隐藏结果容器 */
     }
 
     .control-buttons {
@@ -70,6 +85,26 @@
       padding: 5px 0;
       border-bottom: 1px solid #e5e7eb;
     }
+
+    .video-format-alert {
+      display: none;
+      background-color: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .video-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 16px;
+      display: none;
+      /* 初始隐藏加载动画 */
+    }
   </style>
 </head>
 
@@ -81,14 +116,30 @@
       </div>
       <nav class="sticky top-0"></nav>
       <ul class="space-y-2">
-        <li><a href="index.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
-        <li><a href="video.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
-        <li><a href="data.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
-        <li><a href="data-vis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
-        <li><a href="ai-analysis.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
-        <li><hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto"></li>
-        <li><a href="console.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
-        <li><a href="settings.html" class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
+        <li><a href="index.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
+        <li><a href="video.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
+        <li><a href="data.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
+        <li><a href="data-vis.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
+        <li><a href="ai-analysis.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
+        <li>
+          <hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto">
+        </li>
+        <li><a href="console.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
+        <li><a href="settings.html"
+            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
+              src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
       </ul>
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
         <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
@@ -96,31 +147,35 @@
       </div>
     </aside>
 
-    <!-- 主内容区域 -->
     <div class="flex-1 container mx-auto p-4 max-w-10xl">
       <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold text-center mb-6">视频检测</h2>
 
-        <!-- 视频上传和播放部分 -->
         <div class="mb-6">
           <label for="video-upload" class="block text-lg font-medium text-gray-700">上传视频文件</label>
-          <input type="file" id="video-upload" accept="video/*" class="mt-2 mb-4 p-2 border rounded-md w-full"
-            onchange="previewVideo(event)">
+          <input type="file" id="video-upload" accept="video/mp4,video/webm,video/ogg"
+            class="mt-2 mb-4 p-2 border rounded-md w-full" onchange="previewVideo(event)">
 
-          <!-- 视频播放区域 -->
+          <div class="video-format-alert" id="format-alert">
+            <p>提示：建议使用H.264编码的MP4格式视频以获得最佳兼容性</p>
+            <p class="text-sm text-gray-600">如遇播放问题，请尝试使用<a href="#" onclick="showConversionHelp()"
+                class="text-blue-600">格式转换工具</a></p>
+          </div>
+
           <div class="video-container">
-            <video id="video-preview" class="video-preview" controls></video>
+            <video src="../public/output.mp4" id="video-preview" class="video-preview" controls>
+              <source id="video-source" type="video/mp4">
+              您的浏览器不支持HTML5视频
+            </video>
+            <div class="video-loading" id="video-loading">视频加载中...</div>
           </div>
         </div>
 
-        <!-- 按钮区域，包含开始检测和控制按钮 -->
         <div class="flex justify-center space-x-4 mt-4">
-          <!-- 开始检测按钮 -->
           <button id="detect-button"
             class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300"
             onclick="startDetection()">开始检测</button>
 
-          <!-- 控制按钮 -->
           <button onclick="pauseVideo()"
             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
             暂停
@@ -135,13 +190,11 @@
           </button>
         </div>
 
-
-        <!-- 上传历史 -->
         <div class="upload-history">
           <h3 class="text-lg font-semibold">上传历史</h3>
           <ul>
-            <li>视频1.mp4</li>
-            <li>视频2.mp4</li>
+            <li>output.mp4</li>
+            <li>output(2).mp4</li>
           </ul>
         </div>
       </div>
@@ -149,50 +202,67 @@
   </div>
 
   <script>
-    // 预览视频
-    function previewVideo(event) {
-      const videoElement = document.getElementById("video-preview");
-      const file = event.target.files[0];
+    const videoPreview = document.getElementById('video-preview');
+    const videoLoading = document.getElementById('video-loading');
+    const resultContainer = document.getElementById('result');
 
+    function previewVideo(event) {
+      const file = event.target.files[0];
       if (file) {
-        const objectURL = URL.createObjectURL(file);
-        videoElement.src = objectURL;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          videoPreview.src = e.target.result;
+          // 可以在这里添加逻辑，例如在文件加载后显示视频容器
+          // videoPreview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
       }
     }
 
-    // 开始检测
     function startDetection() {
-      const resultContainer = document.getElementById("result");
-      const resultText = document.getElementById("result-text");
+      videoLoading.style.display = 'block';
+      videoPreview.style.display = 'none'; // 开始检测时隐藏视频
+      resultContainer.style.display = 'none'; // 开始检测时隐藏结果
 
-      resultContainer.classList.remove("hidden");
-      resultText.textContent = "视频分析中，请稍等...";
+      const startTime = Date.now();
 
-      // 假设这里进行视频检测的逻辑
-      setTimeout(() => {
-        resultText.textContent = "检测完成！视频中未发现缺陷。";  // 这里可以根据检测结果动态更新
-      }, 5000); // 模拟检测延时
+      function updateLoading() {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= 5000) {
+          videoLoading.innerHTML = '检测完成！';
+        } else {
+          requestAnimationFrame(updateLoading);
+        }
+      }
+
+      requestAnimationFrame(updateLoading);
     }
 
-    // 暂停视频
     function pauseVideo() {
-      const videoElement = document.getElementById("video-preview");
-      videoElement.pause();
+      if (!videoPreview.paused) {
+        videoPreview.pause();
+      }
     }
 
-    // 停止视频
     function stopVideo() {
-      const videoElement = document.getElementById("video-preview");
-      videoElement.pause();
-      videoElement.currentTime = 0;
+      videoPreview.pause();
+      videoPreview.currentTime = 0;
     }
 
-    // 重播视频
     function replayVideo() {
-      const videoElement = document.getElementById("video-preview");
-      videoElement.currentTime = 0;
-      videoElement.play();
+      videoLoading.style.display = 'none'; // 隐藏加载动画
+      videoPreview.style.display = 'block'; // 点击重播时显示视频
+      videoPreview.currentTime = 0;
+      videoPreview.play();
     }
+
+    function showConversionHelp() {
+      alert('请使用如 HandBrake 等视频格式转换工具将视频转换为 H.264 编码的 MP4 格式。');
+    }
+
+    // 页面加载时不显示视频和结果
+    videoPreview.style.display = 'none';
+    resultContainer.style.display = 'none';
   </script>
 </body>
 

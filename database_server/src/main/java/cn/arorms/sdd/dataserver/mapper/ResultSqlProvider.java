@@ -15,7 +15,7 @@ public class ResultSqlProvider {
 
     public String searchResultsSql(Map<String, Object> params) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM res WHERE 1=1");
+        sql.append("SELECT fig_id, name, date, time, label, num FROM res WHERE 1=1");
 
         if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
             sql.append(" AND name LIKE CONCAT('%', #{name}, '%')");

@@ -52,7 +52,9 @@ public interface ResultMapper {
     // Get result by figure id
     @Select("SELECT * FROM res WHERE fig_id = #{figId}")
     @Results({
-            @Result(property = "figId", column = "fig_id") // Mapping fig_id to figId
+            // Mapping
+            @Result(property = "figId", column = "fig_id"),
+            @Result(property = "resFig", column = "res_fig")
     })
     ResultEntity getResultById(@Param("figId") int figId);
 
@@ -64,7 +66,6 @@ public interface ResultMapper {
     @SelectProvider(type = ResultSqlProvider.class, method = "searchResultsSql")
     @Results({
             @Result(property = "figId", column = "fig_id"), // Mapping fig_id to figId
-            @Result(property = "resFig", column = "res_fig")
     })
     List<ResultEntity> searchResults(
             @Param("limit") int limit,

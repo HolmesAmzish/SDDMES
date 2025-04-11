@@ -7,8 +7,8 @@ let pythonProcess = null;
 
 // Set the test account
 const VALID_CREDENTIALS = {
-  username: '',
-  password: ''
+  username: 'admin',
+  password: 'password'
 };
 
 function createLoginWindow() {
@@ -17,7 +17,7 @@ function createLoginWindow() {
     height: 640,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }

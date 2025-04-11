@@ -3,6 +3,8 @@ package cn.arorms.sdd.dataserver.controller;
 import cn.arorms.sdd.dataserver.entity.ResultEntity;
 import cn.arorms.sdd.dataserver.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -62,7 +64,7 @@ public class ResultController {
             @RequestParam(required = false) String endDate) {
 
         List<ResultEntity> data = resultService.searchResults(limit, page, name, num, startDate, endDate);
-        int total = resultService.getFilteredCount(name, num, startDate, endDate); // 下面我们来补这个
+        int total = resultService.getFilteredCount(name, num, startDate, endDate);
         Map<String, Object> response = new HashMap<>();
         response.put("data", data);
         response.put("total", total);
@@ -73,5 +75,16 @@ public class ResultController {
     @PostMapping("/insert")
     public void insertResults(@RequestBody List<ResultEntity> results) {
         resultService.insertResults(results);
+    }
+
+    @GetMapping(value = "/getResFig", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getResultFigure(@RequestParam int id) {
+        ResultEntity result = resultService.getResultById(id);
+        if (result == null || result.getResFig() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(result.getResFig());
     }
 }
