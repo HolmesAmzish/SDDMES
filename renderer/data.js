@@ -43,6 +43,9 @@ function fetchData() {
     const startDate = document.getElementById("start-date").value;
     const endDate = document.getElementById("end-date").value;
 
+    const checkedTags = Array.from(document.querySelectorAll('#tag-filter input[type="checkbox"]:checked'));
+    const hasCheckedTag = checkedTags.length > 0;
+
     const params = new URLSearchParams({
         name: name,
         num: num,
@@ -51,6 +54,10 @@ function fetchData() {
         limit: itemsPerPage,
         page: currentPage
     });
+
+    if (hasCheckedTag) {
+        params.append("label", "true");
+    }
 
     fetch(`http://localhost:8080/api/data/search?${params.toString()}`)
         .then(response => response.json())

@@ -56,15 +56,16 @@ public class ResultController {
 
     @GetMapping("/search")
     public Map<String, Object> searchResults(
-            @RequestParam(defaultValue = "30") int limit,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer num,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-
-        List<ResultEntity> data = resultService.searchResults(limit, page, name, num, startDate, endDate);
-        int total = resultService.getFilteredCount(name, num, startDate, endDate);
+        @RequestParam(defaultValue = "30") int limit,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) Integer num,
+        @RequestParam(required = false) String startDate,
+        @RequestParam(required = false) String endDate,
+        @RequestParam(required = false) String label
+    ) {
+        List<ResultEntity> data = resultService.searchResults(limit, page, name, num, startDate, endDate, label);
+        int total = resultService.getFilteredCount(name, num, startDate, endDate, label);
         Map<String, Object> response = new HashMap<>();
         response.put("data", data);
         response.put("total", total);

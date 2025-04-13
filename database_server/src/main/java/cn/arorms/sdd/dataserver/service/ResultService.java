@@ -44,9 +44,9 @@ public class ResultService {
         return resultMapper.getPaginatedResults(limit, offset);
     }
 
-    public List<ResultEntity> searchResults(int limit, int page, String name, Integer num, String startDate, String endDate) {
+    public List<ResultEntity> searchResults(int limit, int page, String name, Integer num, String startDate, String endDate, String label) {
         int offset = (page - 1) * limit;
-        return resultMapper.searchResults(limit, offset, name, num, startDate, endDate);
+        return resultMapper.searchResults(limit, offset, name, num, startDate, endDate, label);
     }
 
     public void insertResults(List<ResultEntity> results) {
@@ -57,8 +57,8 @@ public class ResultService {
         return resultMapper.getResultById(figId);
     }
 
-    public int getFilteredCount(String name, Integer num, String startDate, String endDate) {
-        return resultMapper.getFilteredCount(name, num, startDate, endDate);
+    public int getFilteredCount(String name, Integer num, String startDate, String endDate, String label) {
+        return resultMapper.getFilteredCount(name, num, startDate, endDate, label);
     }
 
     public int getTotalCount() {
@@ -67,6 +67,6 @@ public class ResultService {
 
     // 新增方法：获取指定日期范围的数据
     public List<ResultEntity> getResultsInDateRange(String startDate, String endDate) {
-        return resultMapper.searchResults(Integer.MAX_VALUE, 1, null, null, startDate, endDate);
+        return resultMapper.searchResults(Integer.MAX_VALUE, 1, null, null, startDate, endDate, "false");
     }
 }

@@ -26,6 +26,14 @@
 提交登陆信息后，首先会通过密码哈希算法将提交的信息加密，并直接与数据库中加密过的密码进行比对以提高软件的安全性。
 
 其次如果用户持续五次尝试错误的登陆信息，将会添加验证码一栏，必须填写正确的验证码才可以提交信息，避免过多次尝试密码。
+```js
+const hashedPassword = sha256(password);
+fetch("http://localhost:8080/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password: hashedPassword })
+})
+```
 
 ## 图片检测
 

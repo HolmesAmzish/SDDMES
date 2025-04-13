@@ -3,6 +3,42 @@
 ## 图片检测
 
 接收一批图片并返回模型输出。
+```python
+@app.route('/api/detect', methods=['POST'])
+def detect():
+    # Check if images are provided
+    if 'images' not in request.files:
+        return jsonify({"error": "No images provided"}), 400
+    image_files = request.files.getlist('images')
+    results = []
+    for image_file in image_files:
+        try:
+            image_data = image_file.read()
+            filename = image_file.filename or "uploaded_image.jpg"
+            
+            # Validate image
+            try:
+                Image.open(io.BytesIO(image_data)).verify()
+            except Exception as e:
+                return jsonify({"error": f"Invalid image data for {filename}", "details": str(e)}), 400
+
+            # Process image
+            with torch.no_grad():  # Disable gradient calculation during inference
+                predicted_label, segmentation, time_cost = predict(...)
+            # Generate result image
+            res_fig = eda(df=segmentation, data=image_data)
+            # Append result to list
+            results.append(result.to_dict())
+        
+        except Exception as e:
+            ...
+
+        torch.cuda.empty_cache()
+        if hasattr(torch, 'cuda') and torch.cuda.is_available():
+            torch.cuda.synchronize()
+
+    return jsonify(results)
+```
 
 ```http
 POST /api/detect/

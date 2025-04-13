@@ -73,7 +73,8 @@ public interface ResultMapper {
             @Param("name") String name,
             @Param("num") Integer num,
             @Param("startDate") String startDate,
-            @Param("endDate") String endDate
+            @Param("endDate") String endDate,
+            @Param("label") String label
     );
 
     // Count the filtered results
@@ -82,7 +83,8 @@ public interface ResultMapper {
             @Param("name") String name,
             @Param("num") Integer num,
             @Param("startDate") String startDate,
-            @Param("endDate") String endDate
+            @Param("endDate") String endDate,
+            @Param("label") String label
     );
 }
 

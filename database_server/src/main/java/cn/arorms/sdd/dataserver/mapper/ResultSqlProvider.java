@@ -29,6 +29,14 @@ public class ResultSqlProvider {
         if (params.get("endDate") != null && !params.get("endDate").toString().isEmpty()) {
             sql.append(" AND date <= #{endDate}");
         }
+        if (params.get("label") != null) {
+            String labelParam = params.get("label").toString();
+            if (!labelParam.equals("false")) {
+                // Modify the existing StringBuilder
+                sql.setLength(0); // Clear the existing content
+                sql.append("SELECT fig_id, name, date, time, label, num FROM res WHERE label = '[False False  True  True]'");
+            }
+        }
         sql.append(" ORDER BY fig_id DESC LIMIT #{limit} OFFSET #{offset}");
         return sql.toString();
     }
@@ -48,6 +56,14 @@ public class ResultSqlProvider {
         }
         if (params.get("endDate") != null && !params.get("endDate").toString().isEmpty()) {
             sql.append(" AND date <= #{endDate}");
+        }
+        if (params.get("label") != null) {
+            String labelParam = params.get("label").toString();
+            if (!labelParam.equals("false")) {
+                // Modify the existing StringBuilder
+                sql.setLength(0); // Clear the existing content
+                sql.append("SELECT COUNT(*) FROM res WHERE label = '[False False  True  True]'");
+            }
         }
 
         return sql.toString();
