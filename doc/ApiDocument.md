@@ -1,44 +1,14 @@
+# 整体框架
+
+设计由两个微服务组成，分别是机器视觉检测服务和数据存储分析服务。
+
 # 图像检测 api
+
+机器视觉图像检测服务通过 Flask 框架构建 API 提供，并内部调用 OpenCV 和运行 PyTorch 进行推理，进行结果的检测。
 
 ## 图片检测
 
 接收一批图片并返回模型输出。
-```python
-@app.route('/api/detect', methods=['POST'])
-def detect():
-    # Check if images are provided
-    if 'images' not in request.files:
-        return jsonify({"error": "No images provided"}), 400
-    image_files = request.files.getlist('images')
-    results = []
-    for image_file in image_files:
-        try:
-            image_data = image_file.read()
-            filename = image_file.filename or "uploaded_image.jpg"
-            
-            # Validate image
-            try:
-                Image.open(io.BytesIO(image_data)).verify()
-            except Exception as e:
-                return jsonify({"error": f"Invalid image data for {filename}", "details": str(e)}), 400
-
-            # Process image
-            with torch.no_grad():  # Disable gradient calculation during inference
-                predicted_label, segmentation, time_cost = predict(...)
-            # Generate result image
-            res_fig = eda(df=segmentation, data=image_data)
-            # Append result to list
-            results.append(result.to_dict())
-        
-        except Exception as e:
-            ...
-
-        torch.cuda.empty_cache()
-        if hasattr(torch, 'cuda') and torch.cuda.is_available():
-            torch.cuda.synchronize()
-
-    return jsonify(results)
-```
 
 ```http
 POST /api/detect/
@@ -65,6 +35,8 @@ POST /api/detect/
 
 
 # 数据服务 api
+
+在数据服务中，利用 Spring Boot 快速创建 RESTful API 并通过 Spring AI 接入 OpenAiApi，即支持 Ollama、DeepSeek 等多种支持 OpenAI 规范的接口，同时配合本地构建的 MCP 工具，实现大语言模型对数据库和系统一些接口的直接访问，提高系统工作效率和 AI 分析的准确性。
 
 ## 获取最近记录
 
@@ -169,6 +141,13 @@ GET /api/data/search
 
 
 # AI 
+
+```http
+```
+
+
+
+
 
 ```
 sk-c6c11ae0a25a4e1ea64ff97e98d4057a
