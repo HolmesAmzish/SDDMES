@@ -1,6 +1,6 @@
 package cn.arorms.sdd.dataserver.service;
 
-import cn.arorms.sdd.dataserver.entity.ResultEntity;
+import cn.arorms.sdd.dataserver.models.ResultEntity;
 import cn.arorms.sdd.dataserver.mapper.ResultMapper;
 import org.springframework.stereotype.Service;
 

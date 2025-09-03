@@ -1,7 +1,7 @@
 // src/main/java/cn/arorms/SDDAnalyzer/controller/UserController.java
 package cn.arorms.sdd.dataserver.controller;
 
-import cn.arorms.sdd.dataserver.entity.User;
+import cn.arorms.sdd.dataserver.models.User;
 import cn.arorms.sdd.dataserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

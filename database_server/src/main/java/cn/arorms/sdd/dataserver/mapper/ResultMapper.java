@@ -1,6 +1,6 @@
 package cn.arorms.sdd.dataserver.mapper;
 
-import cn.arorms.sdd.dataserver.entity.ResultEntity;
+import cn.arorms.sdd.dataserver.models.ResultEntity;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

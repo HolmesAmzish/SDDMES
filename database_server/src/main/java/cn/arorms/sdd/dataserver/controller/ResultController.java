@@ -1,6 +1,6 @@
 package cn.arorms.sdd.dataserver.controller;
 
-import cn.arorms.sdd.dataserver.entity.ResultEntity;
+import cn.arorms.sdd.dataserver.models.ResultEntity;
 import cn.arorms.sdd.dataserver.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

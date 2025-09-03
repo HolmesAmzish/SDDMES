@@ -1,7 +1,7 @@
 // src/main/java/cn/arorms/SDDAnalyzer/service/impl/UserServiceImpl.java
 package cn.arorms.sdd.dataserver.service.impl;
 
-import cn.arorms.sdd.dataserver.entity.User;
+import cn.arorms.sdd.dataserver.models.User;
 import cn.arorms.sdd.dataserver.mapper.UserMapper;
 import cn.arorms.sdd.dataserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

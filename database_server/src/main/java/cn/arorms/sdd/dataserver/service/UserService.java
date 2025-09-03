@@ -1,7 +1,7 @@
 // src/main/java/cn/arorms/SDDAnalyzer/service/UserService.java
 package cn.arorms.sdd.dataserver.service;
 
-import cn.arorms.sdd.dataserver.entity.User;
+import cn.arorms.sdd.dataserver.models.User;
 
 public interface UserService {
     User getUserById(Integer id);

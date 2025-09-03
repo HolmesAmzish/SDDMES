@@ -1,5 +1,5 @@
 // src/main/java/cn/arorms/SDDAnalyzer/entity/User.java
-package cn.arorms.sdd.dataserver.entity;
+package cn.arorms.sdd.dataserver.models;
 
 import lombok.Data;
 

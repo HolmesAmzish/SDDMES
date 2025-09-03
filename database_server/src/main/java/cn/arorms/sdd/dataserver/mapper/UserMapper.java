@@ -1,7 +1,7 @@
 // src/main/java/cn/arorms/SDDAnalyzer/mapper/UserMapper.java
 package cn.arorms.sdd.dataserver.mapper;
 
-import cn.arorms.sdd.dataserver.entity.User;
+import cn.arorms.sdd.dataserver.models.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
