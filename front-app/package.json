@@ -1,0 +1,55 @@
+{
+  "name": "sdd",
+  "version": "1.0.0",
+  "description": "Steel Defect Detection",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "cn.arorms.sdd",
+    "productName": "vehicle_steel_parts_defect_detection",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "main.js",
+      "render.js",
+      "preload.js",
+      "node_modules/**",
+      "view/**",
+      "renderer/**",
+      "public/**"
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "view/icon/sdd-logo.png",
+      "category": "Utility"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "view/icon/sdd-logo.png"
+    }
+  },
+  "author": "Cacciatore",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^35.1.3",
+    "electron-builder": "^26.0.12"
+  }
+}

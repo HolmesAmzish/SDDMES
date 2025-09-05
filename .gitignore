@@ -13,3 +13,4 @@ build/
 **/*.pth
 **/*.mp4
 **/*.pdf
+**/keys.properties
