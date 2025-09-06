@@ -11,8 +11,8 @@
     <groupId>cn.arorms.sdd</groupId>
     <artifactId>data</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>backend_api</name>
-    <description>backend_api</description>
+    <name>backend-api</name>
+    <description>backend-api</description>
     <url/>
     <licenses>
         <license/>

@@ -107,10 +107,7 @@ def detect():
                 "details": str(e)
             })
 
-        # Free GPU memory after each image
-        #
-        # WTF is this?
-        #
+        # Free GPU memory cache after each image
         torch.cuda.empty_cache()
         if hasattr(torch, 'cuda') and torch.cuda.is_available():
             torch.cuda.synchronize()

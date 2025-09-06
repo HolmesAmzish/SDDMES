@@ -61,6 +61,9 @@ def run_inference(image_path: str):
     print(f"Defect count: {len(segmentation[segmentation['EncodedPixels'] != ''])}")
 
     # Save visualization
+
+
+
     output_path = f"result_{os.path.basename(image_path)}.png"
     with open(output_path, "wb") as f:
         f.write(res_fig)
