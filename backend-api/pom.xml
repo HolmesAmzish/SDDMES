@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.arorms.sdd</groupId>
-    <artifactId>data</artifactId>
+    <artifactId>backend-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>backend-api</name>
     <description>backend-api</description>
