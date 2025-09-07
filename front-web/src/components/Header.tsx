@@ -1,14 +1,14 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // 如果你用 Next.js 则改为 useRouter
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // 如果用 Next.js 改成 useRouter
 import logo from "../assets/sdd-logo.png";
-import {FaArrowLeft} from "react-icons/fa"; // 导入箭头图标
+import { FaArrowLeft } from "react-icons/fa";
 
 interface HeaderProps {
   title?: string;
   subtitle?: string;
   actions?: React.ReactNode;
   children?: React.ReactNode;
-  showBackButton?: boolean; // 新增：是否显示返回按钮
+  showBackButton?: boolean;
 }
 
 export default function Header({
@@ -16,14 +16,66 @@ export default function Header({
   subtitle,
   actions,
   children,
-  showBackButton = false, // 默认不显示
+  showBackButton = false,
 }: HeaderProps) {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // 初始化从 localStorage 或 token 解码
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    if (savedUsername) {
+      setUsername(savedUsername);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = token.split(".")[1];
+        const decoded = JSON.parse(atob(payload));
+        const uname = decoded.sub || decoded.username;
+        localStorage.setItem("username", uname);
+        setUsername(uname);
+      } catch (e) {
+        console.error("Token decode error", e);
+      }
+    }
+  }, []);
+
+  // 检查登录状态
+  const isLoggedIn = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+
+    try {
+      const payload = token.split(".")[1];
+      const decoded = JSON.parse(atob(payload));
+      const now = Math.floor(Date.now() / 1000);
+      return decoded.exp && decoded.exp > now;
+    } catch {
+      return false;
+    }
+  };
+
+  // 点击登录 → 跳转 /login
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setUsername("");
+    console.log("User logged out");
+    setMenuOpen(false);
+  };
 
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-300">
+    <header className="flex items-center justify-between p-4 border-b border-gray-300 bg-white/70 backdrop-blur">
       <div className="flex items-center gap-2">
-        {/* 返回按钮位置 */}
+        {/* 返回按钮 */}
         <div className="w-10">
           {showBackButton && (
             <button
@@ -43,7 +95,46 @@ export default function Header({
         </div>
       </div>
 
-      <div className="flex gap-2">{actions}</div>
+      {/* 登录/用户菜单 */}
+      <div className="relative flex gap-2 items-center">
+        {actions}
+        {isLoggedIn() ? (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="text-gray-600 hover:text-gray-900 mr-4 px-3 py-1 rounded hover:bg-gray-100 transition-colors"
+            >
+              {username}
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-md">
+                <button
+                  onClick={() => {
+                    console.log("设置 clicked");
+                    setMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  设置
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  退出
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button
+            className="text-gray-600 hover:text-gray-900 mr-4 px-3 py-1 rounded hover:bg-gray-100 transition-colors"
+            onClick={handleLoginClick}
+          >
+            登录
+          </button>
+        )}
+      </div>
     </header>
   );
 }

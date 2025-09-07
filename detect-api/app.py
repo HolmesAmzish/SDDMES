@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import torch
 from datetime import datetime
 from utilis.pred import predict
@@ -9,6 +10,7 @@ from PIL import Image
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 # Initialize models (same as in MainWindow)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -2,9 +2,8 @@ package cn.arorms.sdd.data.models;
 
 import cn.arorms.sdd.data.enums.ItemType;
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data @Entity @Table(name = "items")
+@Entity @Table(name = "items")
 public class Item {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")

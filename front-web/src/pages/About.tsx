@@ -74,7 +74,7 @@ export default function About() {
 
               {/* GitHub 项目指示 */}
               <div className="mt-12 text-center">
-                <p className="text-gray-700 mb-4">查看项目源码：</p>
+                <p className="text-gray-700 mb-4">项目源码：</p>
                 <a
                   href="https://github.com/HolmesAmzish/SDDMES"
                   target="_blank"

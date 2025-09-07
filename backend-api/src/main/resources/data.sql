@@ -5,3 +5,7 @@ VALUES
 (NULL, GETDATE(), 0, 1, 0, 1, 8.50, 2, '0.00,0.95,0.00,0.05'),
 (NULL, GETDATE(), 0, 0, 0, 1, 5.20, 1, '0.00,0.00,0.00,1.00'),
 (NULL, GETDATE(), 1, 1, 1, 0, 15.75, 3, '0.90,0.80,0.75,0.00');
+
+INSERT INTO users (username, password, role)
+VALUES ('admin', '123', 'ADMIN'),
+        ('user', '123', 'USER');

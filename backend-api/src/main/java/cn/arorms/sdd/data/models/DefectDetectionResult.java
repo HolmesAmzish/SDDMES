@@ -1,13 +1,13 @@
 package cn.arorms.sdd.data.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-@Data @Entity @Table(name = "defect_detection_results")
+@Entity @Table(name = "defect_detection_results")
 public class DefectDetectionResult {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -18,7 +18,7 @@ public class DefectDetectionResult {
     private byte[] resultFigure;
 
     @CreationTimestamp
-    @Column(name = "Timestamp")
+    @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
     @Column(name = "has_inclusion")
@@ -39,6 +39,75 @@ public class DefectDetectionResult {
     @Column(name = "defect_number")
     private int defectNumber;
 
-    @Column(name = "detect_confidences")
-    private String detectConfidences;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public byte[] getResultFigure() {
+        return resultFigure;
+    }
+
+    public void setResultFigure(byte[] resultFigure) {
+        this.resultFigure = resultFigure;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public boolean isHasInclusion() {
+        return hasInclusion;
+    }
+
+    public void setHasInclusion(boolean hasInclusion) {
+        this.hasInclusion = hasInclusion;
+    }
+
+    public boolean isHasPatch() {
+        return hasPatch;
+    }
+
+    public void setHasPatch(boolean hasPatch) {
+        this.hasPatch = hasPatch;
+    }
+
+    public boolean isHasScratch() {
+        return hasScratch;
+    }
+
+    public void setHasScratch(boolean hasScratch) {
+        this.hasScratch = hasScratch;
+    }
+
+    public boolean isHasOther() {
+        return hasOther;
+    }
+
+    public void setHasOther(boolean hasOther) {
+        this.hasOther = hasOther;
+    }
+
+    public double getTimeCost() {
+        return timeCost;
+    }
+
+    public void setTimeCost(double timeCost) {
+        this.timeCost = timeCost;
+    }
+
+    public int getDefectNumber() {
+        return defectNumber;
+    }
+
+    public void setDefectNumber(int defectNumber) {
+        this.defectNumber = defectNumber;
+    }
 }

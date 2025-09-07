@@ -1,252 +1,218 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智眸精检 车辆零部件缺陷检测系统 - 数据查询</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* 原有样式保持不变 */
-    .sidebar-button.active {
-      @apply bg-blue-600 text-white;
+interface DefectDetectionResult {
+  id: number;
+  detectConfidences: string;
+  timestamp: string;
+  hasInclusion: boolean;
+  hasPatch: boolean;
+  hasScratch: boolean;
+  hasOther: boolean;
+  defectNumber: number;
+}
+
+interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  number: number; // 当前页，从0开始
+}
+
+const DataQueryPage: React.FC = () => {
+  const [results, setResults] = useState<DefectDetectionResult[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // 过滤条件
+  const [keyword, setKeyword] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [hasInclusion, setHasInclusion] = useState(false);
+  const [hasPatch, setHasPatch] = useState(false);
+  const [hasScratch, setHasScratch] = useState(false);
+  const [hasOther, setHasOther] = useState(false);
+
+  const fetchData = async (pageIndex = 0) => {
+    try {
+      const params: any = { page: pageIndex, size: 10 };
+      if (keyword) params.keyword = keyword;
+      if (startDate) params.start = startDate + "T00:00:00";
+      if (endDate) params.end = endDate + "T23:59:59";
+      if (hasInclusion) params.hasInclusion = true;
+      if (hasPatch) params.hasPatch = true;
+      if (hasScratch) params.hasScratch = true;
+      if (hasOther) params.hasOther = true;
+
+      const res = await axios.get<PageResponse<DefectDetectionResult>>(
+        "/api/results",
+        { params }
+      );
+
+      setResults(res.data.content);
+      setPage(res.data.number);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error("加载数据失败:", err);
     }
+  };
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
+  useEffect(() => {
+    fetchData(0);
+  }, []);
 
-    .pagination button {
-      @apply px-3 py-1 rounded-md transition duration-300;
-    }
+  const resetFilters = () => {
+    setKeyword("");
+    setStartDate("");
+    setEndDate("");
+    setHasInclusion(false);
+    setHasPatch(false);
+    setHasScratch(false);
+    setHasOther(false);
+    fetchData(0);
+  };
 
-    .pagination button:disabled {
-      @apply bg-gray-300 text-gray-500 cursor-not-allowed;
-    }
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="bg-white rounded-xl shadow-md p-4">
+        <h2 className="text-2xl font-semibold text-center mb-4">数据查询</h2>
 
-    .pagination button:not(:disabled) {
-      @apply bg-blue-600 text-white hover:bg-blue-700;
-    }
+        {/* 搜索条件 */}
+        <div className="mb-4 border p-4 space-y-3">
+          <div className="flex flex-wrap gap-4 items-center">
+            <label>日期范围:</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border px-2 py-1 rounded-md"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border px-2 py-1 rounded-md"
+            />
 
-    .table-container {
-      height: 560px;
-      max-width: 100%;
-      overflow-x: auto;
-      overflow-y: auto;
-    }
+            <input
+              type="text"
+              placeholder="按名称搜索"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              className="border px-2 py-1 rounded-md w-40"
+            />
 
-    .fixed-table {
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    .fixed-table th,
-    .fixed-table td {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .search-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .search-container input,
-    .search-container select {
-      @apply border border-gray-300 rounded-md px-2 py-1;
-    }
-
-    .tag-checkbox {
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid #ccc;
-      cursor: pointer;
-      position: relative;
-      margin-right: 8px;
-    }
-
-    .tag-checkbox:checked::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .tag-checkbox[value="1"] {
-      border-color: rgba(255, 99, 132, 0.6);
-    }
-
-    .tag-checkbox[value="1"]:checked::after {
-      background-color: rgba(255, 99, 132, 0.6);
-    }
-
-    .tag-checkbox[value="2"] {
-      border-color: rgba(54, 162, 235, 0.6);
-    }
-
-    .tag-checkbox[value="2"]:checked::after {
-      background-color: rgba(54, 162, 235, 0.6);
-    }
-
-    .tag-checkbox[value="3"] {
-      border-color: rgba(255, 206, 86, 0.6);
-    }
-
-    .tag-checkbox[value="3"]:checked::after {
-      background-color: rgba(255, 206, 86, 0.6);
-    }
-
-    .tag-checkbox[value="4"] {
-      border-color: rgba(75, 192, 192, 0.6);
-    }
-
-    .tag-checkbox[value="4"]:checked::after {
-      background-color: rgba(75, 192, 192, 0.6);
-    }
-
-    #modal {
-      z-index: 1000;
-    }
-
-    #modal-image {
-      max-height: 70vh;
-      object-fit: contain;
-    }
-
-    #modal div {
-      max-width: 90%;
-      max-height: 90vh;
-      overflow: auto;
-    }
-  </style>
-</head>
-
-<body class="bg-gray-100 min-h-screen">
-  <div class="flex min-h-screen">
-    <aside class="w-40 bg-white shadow-md p-4 flex-shrink-0 relative">
-      <!-- Sidebar -->
-      <div class="mb-6">
-        <h1 class="text-center font-bold text-gray-800">工具栏</h1>
-      </div>
-      <nav class="sticky top-0"></nav>
-      <ul class="space-y-2">
-        <li><a href="index.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/search-for-similar.png" alt="" class="w-6 h-6 mr-2"> 图片检测</a></li>
-        <li><a href="video.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/video.png" alt="" class="w-6 h-6 mr-2"> 视频检测</a></li>
-        <li><a href="data.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/charts-bar.png" alt="" class="w-6 h-6 mr-2"> 数据查询</a></li>
-        <li><a href="data-vis.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/charts-pie.png" alt="" class="w-6 h-6 mr-2"> 可视化</a></li>
-        <li><a href="ai-analysis.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/atm.png" alt="" class="w-6 h-6 mr-2"> AI 分析</a></li>
-        <li>
-          <hr class="my-2 border-t-2 border-gray-200 w-28 mx-auto">
-        </li>
-        <li><a href="console.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/calculator.png" alt="" class="w-6 h-6 mr-2"> 控制台</a></li>
-        <li><a href="settings.html"
-            class="block w-full text-left px-4 py-2 hover:bg-blue-50 rounded-md transition-colors flex"><img
-              src="icon/code.png" alt="" class="w-6 h-6 mr-2"> 设置</a></li>
-      </ul>
-      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center w-full p-4">
-        <img src="icon/sdd-logo.png" class="w-16 mx-auto mb-4 opacity-75">
-        <p class="text-xs text-gray-500">汽车零部件检测系统 v2.1.0</p>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <div class="flex-1 p-4">
-      <div class="bg-white rounded-xl shadow-md mb-4">
-        <div class="p-4">
-          <h2 class="text-2xl font-semibold text-center mb-4">数据查询</h2>
-          <!-- Search and Filter -->
-          <div class="mb-4 border">
-            <div class="search-container m-4 ">
-              <label>缺陷数量</label>
-              <input type="text" id="num-filter" placeholder="缺陷数" min="0" max="4"
-                class="w-20 text-center border border-gray-200 py-1 rounded-md">
-
-              <label for="">日期范围</label>
-              <div class="border border-gray-200 py-1 rounded-md px-2">
-                <input type="date" id="start-date" placeholder="开始日期">
-                <input type="date" id="end-date" placeholder="结束日期">
-              </div>
-
-              <input type="text" id="name-search" placeholder="按名称搜索"
-                class="w-40 border border-gray-200 rounded py-1 rounded-md px-2">
-              <button class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition duration-300"
-                onclick="fetchData()">搜索</button>
-              <button class="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500 transition duration-300"
-                onclick="resetFilters()">重置</button>
-            </div>
-
-            <div class="m-4 flex gap-6" id="tag-filter">
-              <label class="flex items-center"><input type="checkbox" value="1" class="tag-checkbox">夹杂物</label>
-              <label class="flex items-center"><input type="checkbox" value="2" class="tag-checkbox">补丁</label>
-              <label class="flex items-center"><input type="checkbox" value="3" class="tag-checkbox">划痕</label>
-              <label class="flex items-center"><input type="checkbox" value="4" class="tag-checkbox">其他</label>
-
-              <label class="flex items-center">
-                <span class="mr-2">特定日期:</span>
-                <input type="date" id="specific-date" class="border border-gray-300 rounded-md px-2 py-1">
-              </label>
-            </div>
+            <button
+              onClick={() => fetchData(0)}
+              className="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700"
+            >
+              搜索
+            </button>
+            <button
+              onClick={resetFilters}
+              className="bg-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-500"
+            >
+              重置
+            </button>
           </div>
 
-          <div class="table-container">
-            <table class="w-full border-collapse fixed-table">
-              <thead class="bg-gray-100 text-black">
-                <tr>
-                  <th class="py-2 px-4 text-center">ID</th>
-                  <th class="py-2 px-4 text-center">名称</th>
-                  <th class="py-2 px-4 text-center">日期</th>
-                  <th class="py-2 px-4 text-center">时间</th>
-                  <th class="py-2 px-4 text-center">标签</th>
-                  <th class="py-2 px-4 text-center">缺陷数量</th>
-                </tr>
-              </thead>
-              <tbody id="data-table" class="text-center">
-              </tbody>
-            </table>
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={hasInclusion}
+                onChange={(e) => setHasInclusion(e.target.checked)}
+              />
+              夹杂物
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={hasPatch}
+                onChange={(e) => setHasPatch(e.target.checked)}
+              />
+              补丁
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={hasScratch}
+                onChange={(e) => setHasScratch(e.target.checked)}
+              />
+              划痕
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={hasOther}
+                onChange={(e) => setHasOther(e.target.checked)}
+              />
+              其他
+            </label>
           </div>
         </div>
-      </div>
-      <!-- Pagination -->
-      <div class="pagination">
-        <button onclick="changePage(-1)" id="prev-btn">上一页</button>
-        <span>第 <span id="current-page">1</span> 页 / 共 <span id="total-pages">1</span> 页</span>
-        <button onclick="changePage(1)" id="next-btn">下一页</button>
-      </div>
-    </div>
-  </div>
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-4 rounded-lg w-2/3">
-      <h3 class="text-center text-xl mb-3">检测图片</h3>
-      <img id="modal-image" src="" alt="检测图片" class="w-full h-auto mb-3">
-      <button onclick="closeModal()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">关闭</button>
-    </div>
-  </div>
-  <script src="../renderer/data.js"></script>
-</body>
 
-</html>
+        {/* 表格 */}
+        <div className="overflow-auto max-h-[560px]">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-2 px-4 text-center">ID</th>
+                <th className="py-2 px-4 text-center">置信度</th>
+                <th className="py-2 px-4 text-center">日期</th>
+                <th className="py-2 px-4 text-center">标签</th>
+                <th className="py-2 px-4 text-center">缺陷数量</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((item) => (
+                <tr key={item.id} className="border-b">
+                  <td className="py-2 px-4 text-center">{item.id}</td>
+                  <td className="py-2 px-4 text-center">
+                    {item.detectConfidences}
+                  </td>
+                  <td className="py-2 px-4 text-center">
+                    {new Date(item.timestamp).toLocaleString()}
+                  </td>
+                  <td className="py-2 px-4 text-center">
+                    {[
+                      item.hasInclusion && "夹杂物",
+                      item.hasPatch && "补丁",
+                      item.hasScratch && "划痕",
+                      item.hasOther && "其他",
+                    ]
+                      .filter(Boolean)
+                      .join("，")}
+                  </td>
+                  <td className="py-2 px-4 text-center">{item.defectNumber}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* 分页 */}
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <button
+            onClick={() => fetchData(page - 1)}
+            disabled={page <= 0}
+            className="px-3 py-1 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
+          >
+            上一页
+          </button>
+          <span>
+            第 {page + 1} 页 / 共 {totalPages} 页
+          </span>
+          <button
+            onClick={() => fetchData(page + 1)}
+            disabled={page >= totalPages - 1}
+            className="px-3 py-1 rounded-md bg-blue-600 text-white disabled:bg-gray-300"
+          >
+            下一页
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DataQueryPage;
