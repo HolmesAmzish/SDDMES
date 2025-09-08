@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import placeholder from "../assets/placeholder.jpg";
 
 interface DefectResult {
-  id: number;
+  id?: number;
   detectConfidences: string;
   defectNumber: number;
   timeCost: number;
@@ -12,6 +13,7 @@ interface DefectResult {
   hasPatch: boolean;
   hasScratch: boolean;
   hasOther: boolean;
+  resultFigure?: string;
 }
 
 export default function DetectionProcessPage() {
@@ -43,15 +45,25 @@ export default function DetectionProcessPage() {
       const formData = new FormData();
       selectedFiles.forEach((file) => formData.append("images", file));
 
+      console.log("开始检测，发送文件数量:", selectedFiles.length);
+      
       const res = await axios.post<DefectResult[]>(
         "http://localhost:5000/api/detect",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+      
+      console.log("检测API返回结果:", res.data);
       setResults(res.data);
+      
+      if (res.data && res.data.length > 0) {
+        alert(`检测完成！共检测 ${res.data.length} 个文件`);
+      } else {
+        alert("检测完成，但未返回结果");
+      }
     } catch (err) {
-      console.error(err);
-      alert("检测失败");
+      console.error("检测失败:", err);
+      alert("检测失败，请检查检测服务是否正常运行");
     } finally {
       setLoading(false);
     }
@@ -59,12 +71,26 @@ export default function DetectionProcessPage() {
 
   /** 保存结果 */
   const saveResults = async () => {
+    if (results.length === 0) return alert("没有检测结果可保存");
+    
     try {
-      await axios.post("/api/detection/save", results);
-      alert("保存成功");
+      // 保存每个检测结果到后端并获取保存后的数据
+      const savedResults: DefectResult[] = [];
+      for (const result of results) {
+        const response = await axios.post<DefectResult>(
+          "http://localhost:8080/api/detection/add", 
+          result,
+          { headers: { "Content-Type": "application/json" } }
+        );
+        savedResults.push(response.data);
+      }
+      
+      // 更新前端状态为保存后的结果（包含ID和可能的其他后端生成字段）
+      setResults(savedResults);
+      alert("保存成功！结果已更新到前端列表");
     } catch (err) {
-      console.error(err);
-      alert("保存失败");
+      console.error("保存失败:", err);
+      alert("保存失败，请检查后端服务是否正常运行");
     }
   };
 
@@ -84,13 +110,13 @@ export default function DetectionProcessPage() {
     time != null ? `${time.toFixed(2)} s` : "-";
 
   return (
-    <div>
+    <div className="flex-col h-screen">
       <Header
         title="钢铁缺陷检测数据"
         subtitle="钢铁缺陷检测生产制造系统"
         showBackButton
       />
-      <main className="flex min-h-screen">
+      <main className="flex flex-1 overflow-hidden">
         <Sidebar />
 
         {/* Main Content */}
@@ -109,7 +135,7 @@ export default function DetectionProcessPage() {
                       src={
                         selectedFiles[0]
                           ? URL.createObjectURL(selectedFiles[0])
-                          : "icon/placeholder.jpg"
+                          : placeholder
                       }
                       alt="检测结果"
                       className="max-w-full max-h-72 object-contain"
@@ -198,7 +224,9 @@ export default function DetectionProcessPage() {
                       </label>
                       <input
                         type="file"
+                        // @ts-ignore - webkitdirectory is a non-standard attribute
                         webkitdirectory=""
+                        // @ts-ignore - directory is a non-standard attribute
                         directory=""
                         ref={folderInputRef}
                         onChange={handleFolderChange}

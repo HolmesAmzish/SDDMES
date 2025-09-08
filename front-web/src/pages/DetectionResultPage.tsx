@@ -9,6 +9,19 @@ interface PageResponse<T> {
   number: number; // 当前页，从0开始
 }
 
+interface DefectDetectionResult {
+  id: number;
+  detectConfidences: string;
+  defectNumber: number;
+  timeCost: number;
+  hasInclusion: boolean;
+  hasPatch: boolean;
+  hasScratch: boolean;
+  hasOther: boolean;
+  timestamp?: string;
+  resultFigure?: string;
+}
+
 export default function DetectionResultPage() {
   const [results, setResults] = useState<DefectDetectionResult[]>([]);
   const [page, setPage] = useState(0);
@@ -71,7 +84,7 @@ export default function DetectionResultPage() {
         subtitle="钢铁缺陷检测生产制造系统"
         showBackButton
       />
-      <main className="flex min-h-screen">
+      <main className="flex flex-1 overflow-hidden">
         <Sidebar />
         <div className="flex-1 p-6">
           <div className="bg-white rounded-xl">
@@ -84,13 +97,13 @@ export default function DetectionResultPage() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="border px-2 py-1 rounded-md"
+                  className="border px-2 py-1 rounded-md border-gray-200"
                 />
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="border px-2 py-1 rounded-md"
+                  className="border px-2 py-1 rounded-md border-gray-200"
                 />
 
                 <input
@@ -98,7 +111,7 @@ export default function DetectionResultPage() {
                   placeholder="按名称搜索"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  className="border px-2 py-1 rounded-md w-40"
+                  className="border px-2 py-1 rounded-md w-40 border-gray-200"
                 />
 
                 <button

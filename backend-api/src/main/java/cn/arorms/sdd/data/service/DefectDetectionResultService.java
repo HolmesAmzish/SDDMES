@@ -1,7 +1,10 @@
 package cn.arorms.sdd.data.service;
 
+import cn.arorms.sdd.data.controller.AuthController;
 import cn.arorms.sdd.data.models.DefectDetectionResult;
 import cn.arorms.sdd.data.repository.DefectDetectionResultRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,12 +19,14 @@ import java.time.LocalDateTime;
  */
 @Service
 public class DefectDetectionResultService {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final DefectDetectionResultRepository repository;
     public DefectDetectionResultService(DefectDetectionResultRepository repository) {
         this.repository = repository;
     }
 
     public void addDefectDetectionResult(DefectDetectionResult result) {
+        log.info("Adding new detection result: {}", result);
         repository.save(result);
     }
 

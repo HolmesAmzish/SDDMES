@@ -20,9 +20,8 @@ public class DefectDetectionResultController {
      * 添加新的检测结果
      */
     @PostMapping("/add")
-    public DefectDetectionResult addResult(@RequestBody DefectDetectionResult result) {
+    public void addResult(@RequestBody DefectDetectionResult result) {
         service.addDefectDetectionResult(result);
-        return result;
     }
 
     @GetMapping("/query/{id}")

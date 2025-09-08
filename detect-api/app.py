@@ -36,25 +36,58 @@ def load_models():
 load_models()
 
 class APIResult:
-    """Simplified result object for API responses"""
-    def __init__(self, name, res_fig, time, label, num, dice):
+    """Result object matching backend DefectDetectionResult model"""
+    def __init__(self, name, res_fig, time_cost, predicted_label, segmentation):
         self.name = name
         self.res_fig = res_fig
-        self.time = time
-        self.label = label
-        self.num = num
-        self.dice = dice
+        self.time_cost = time_cost
+        self.predicted_label = predicted_label
+        self.segmentation = segmentation
     
     def to_dict(self):
-        """Convert result to dictionary for JSON response"""
-        return {
-            "name": self.name,
-            "result_image": base64.b64encode(self.res_fig).decode('utf-8'),
-            "processing_time": self.time,
-            "labels": self.label,
-            "defect_count": int(self.num),
-            "dice": self.dice
-        }
+        """Convert result to dictionary matching DefectDetectionResult model"""
+        try:
+            # Parse predicted labels to boolean flags from DataFrame
+            # predicted_label is a DataFrame with columns: ['ImageId', 'probability_label', 'predict_label']
+            predict_label_row = self.predicted_label.iloc[0]  # Get first row (should be only one)
+            
+            # Extract the predict_label array (numpy array)
+            predict_labels = predict_label_row['predict_label']
+            
+            # Convert numpy array values to Python booleans safely
+            has_inclusion = bool(predict_labels[0]) if len(predict_labels) > 0 else False
+            has_patch = bool(predict_labels[1]) if len(predict_labels) > 1 else False
+            has_scratch = bool(predict_labels[2]) if len(predict_labels) > 2 else False
+            has_other = bool(predict_labels[3]) if len(predict_labels) > 3 else False
+            
+            # Calculate defect number from segmentation DataFrame
+            defect_number = len(self.segmentation[self.segmentation["EncodedPixels"] != ''])
+            
+            # Convert probability labels to string safely
+            prob_labels = predict_label_row['probability_label']
+            if hasattr(prob_labels, 'astype'):
+                detect_confidences = ', '.join([f"{x:.4f}" for x in prob_labels])
+            else:
+                detect_confidences = str(prob_labels)
+            
+            return {
+                "detectConfidences": detect_confidences,
+                "defectNumber": defect_number,
+                "timeCost": float(self.time_cost),
+                "hasInclusion": has_inclusion,
+                "hasPatch": has_patch,
+                "hasScratch": has_scratch,
+                "hasOther": has_other,
+                "resultFigure": base64.b64encode(self.res_fig).decode('utf-8') if self.res_fig else None
+            }
+        except Exception as e:
+            # Return error information if processing fails
+            import traceback
+            return {
+                "error": f"Result processing failed: {str(e)}",
+                "details": f"Predicted label shape: {self.predicted_label.shape if hasattr(self.predicted_label, 'shape') else 'N/A'}, Segmentation shape: {self.segmentation.shape if hasattr(self.segmentation, 'shape') else 'N/A'}",
+                "traceback": traceback.format_exc()
+            }
 
 @app.route('/api/detect', methods=['POST'])
 def detect():
@@ -93,10 +126,9 @@ def detect():
             result = APIResult(
                 name=filename,
                 res_fig=res_fig,
-                time=f"{time_cost:.2f}",
-                label=', '.join(predicted_label['predict_label'].astype(str)),
-                num=str(len(segmentation[segmentation["EncodedPixels"] != ''])),
-                dice=', '.join(predicted_label['probability_label'].astype(str))
+                time_cost=time_cost,
+                predicted_label=predicted_label,
+                segmentation=segmentation
             )
             
 

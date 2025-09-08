@@ -6,6 +6,7 @@ import About from "./pages/About";
 import DetectionResultPage from "./pages/DetectionResultPage"
 import DetectionProcessPage from "./pages/DetectionProcessPage";
 import LoginPage from "./pages/Login";
+import Setting from "./pages/Setting";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/data" element={<DetectionResultPage />} />
                 <Route path="/dashboard" element={<Dashboard />}/>
                 <Route path="/about" element={<About />} />
+                <Route path="/settings" element={<Setting />} />
             </Routes>
         </Router>
     );

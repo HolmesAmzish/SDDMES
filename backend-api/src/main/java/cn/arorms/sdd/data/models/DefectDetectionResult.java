@@ -39,6 +39,9 @@ public class DefectDetectionResult {
     @Column(name = "defect_number")
     private int defectNumber;
 
+    @Column(name = "detect_confidences")
+    private String detectConfidences;
+
     public Long getId() {
         return id;
     }
@@ -109,5 +112,13 @@ public class DefectDetectionResult {
 
     public void setDefectNumber(int defectNumber) {
         this.defectNumber = defectNumber;
+    }
+
+    public String getDetectConfidences() {
+        return detectConfidences;
+    }
+
+    public void setDetectConfidences(String detectConfidences) {
+        this.detectConfidences = detectConfidences;
     }
 }

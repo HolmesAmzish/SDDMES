@@ -7,7 +7,6 @@ import cn.arorms.sdd.data.security.JwtProvider;
 import cn.arorms.sdd.data.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -33,24 +32,26 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Login controller
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         String username = request.getUsername();
         log.info("login user: {}", username);
+
         User user = userService.getUserByUsername(username);
         if (!passwordMatches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
 
         String token = jwtProvider.generateToken(user.getUsername());
+//        log.info("generated token: {}", token);
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("username", user.getUsername());
 
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token)
-                .build();
+        return ResponseEntity.ok(response);
     }
 
-    // Register controller
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         User user = userService.registerUser(
@@ -61,10 +62,14 @@ public class AuthController {
 
         String token = jwtProvider.generateToken(user.getUsername());
 
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token)
-                .body("注册成功");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "注册成功");
+        response.put("token", token);
+        response.put("username", user.getUsername());
+
+        return ResponseEntity.ok(response);
     }
+
 
     // Compare the encoded password
     private boolean passwordMatches(String raw, String encoded) {

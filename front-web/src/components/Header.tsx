@@ -107,7 +107,7 @@ export default function Header({
               {username}
             </button>
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-md">
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-md">
                 <button
                   onClick={() => {
                     console.log("设置 clicked");

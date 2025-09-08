@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("/api/login", { username, password });
+      const res = await axios.post("http://localhost:8080/api/auth/login", { username, password });
       const { token, username: uname } = res.data;
 
       if (token) {
@@ -31,23 +31,33 @@ export default function LoginPage() {
     <div className="grid grid-cols-[1fr_2fr] h-screen w-screen">
       {/* 左侧背景 */}
       <div
-        className="relative flex flex-col justify-center items-center bg-blue-900 text-white"
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+          className="relative flex flex-col items-center bg-blue-900 text-white h-screen"
+          style={{
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
       >
         {/* 深蓝遮罩 */}
         <div className="absolute inset-0 bg-blue-900/70"></div>
 
-        {/* 内容 */}
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <img src={lightLogo} alt="logo" className="w-28 mb-6" />
+        {/* 中间内容 */}
+        <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center">
+          <img src={lightLogo} alt="logo" className="w-28 mb-6"/>
           <h1 className="text-3xl font-semibold mb-2">钢铁缺陷检测生产系统</h1>
           <p className="text-lg">精密检测，智能化分析</p>
         </div>
+
+        {/* 底部备案信息 */}
+        <div className="relative z-10 flex flex-col items-center pb-6 text-center text-sm">
+          <p>ICP备案号：苏ICP备2024062761</p>
+          <p>
+            &copy; {new Date().getFullYear()}
+            <a className="hover:text-blue-600 ml-1" href="https://github.com/HolmesAmzish/SDDMES">SDDMES</a>
+          </p>
+        </div>
       </div>
+
 
       {/* 右侧登录表单 */}
       <div className="flex justify-center items-center bg-gray-50">
@@ -124,7 +134,7 @@ export default function LoginPage() {
 
           {/* 底部版本号 */}
           <p className="text-xs text-gray-500 text-center mt-8">
-            汽车零部件检测系统 v2.1.0
+            汽车零部件检测系统 v3.0.0
           </p>
         </div>
       </div>
