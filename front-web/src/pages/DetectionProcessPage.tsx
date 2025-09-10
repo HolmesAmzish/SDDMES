@@ -77,6 +77,7 @@ export default function DetectionProcessPage() {
       // 保存每个检测结果到后端并获取保存后的数据
       const savedResults: DefectResult[] = [];
       for (const result of results) {
+
         const response = await axios.post<DefectResult>(
           "http://localhost:8080/api/detection/add", 
           result,

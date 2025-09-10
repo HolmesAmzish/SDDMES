@@ -38,7 +38,7 @@ export default function DetectionResultPage() {
 
   const fetchData = async (pageIndex = 0) => {
     try {
-      const params: any = { page: pageIndex, size: 10 };
+      const params: any = { page: pageIndex, size: 15 };
       if (keyword) params.keyword = keyword;
       if (startDate) params.start = startDate + "T00:00:00";
       if (endDate) params.end = endDate + "T23:59:59";

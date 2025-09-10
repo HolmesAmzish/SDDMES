@@ -42,6 +42,10 @@ public class DefectDetectionResult {
     @Column(name = "detect_confidences")
     private String detectConfidences;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "batch_id")
+    private Batch batch;
+
     public Long getId() {
         return id;
     }
@@ -120,5 +124,13 @@ public class DefectDetectionResult {
 
     public void setDetectConfidences(String detectConfidences) {
         this.detectConfidences = detectConfidences;
+    }
+
+    public Batch getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Batch batch) {
+        this.batch = batch;
     }
 }
