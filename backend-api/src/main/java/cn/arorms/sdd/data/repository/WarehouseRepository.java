@@ -1,4 +1,7 @@
 package cn.arorms.sdd.data.repository;
 
-public interface WarehouseRepository {
+import cn.arorms.sdd.data.models.Warehouse;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
 }

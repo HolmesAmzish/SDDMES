@@ -51,9 +51,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/detection/**", "/api/auth/**", "/api/agent/**", "/hello").permitAll()
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                        .requestMatchers("/api/detection/**", "/api/auth/**", "/api/agent/**", "/hello").permitAll()
+                        .anyRequest().permitAll());
+//                        .anyRequest().authenticated())
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
