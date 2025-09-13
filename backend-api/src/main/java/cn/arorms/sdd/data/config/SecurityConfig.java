@@ -23,7 +23,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author Cacciatore
  */
 @Configuration
-@EnableWebSecurity @EnableMethodSecurity
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;

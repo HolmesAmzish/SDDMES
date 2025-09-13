@@ -2,7 +2,8 @@ package cn.arorms.sdd.data.models;
 
 import jakarta.persistence.*;
 
-@Entity @Table(name = "Batch")
+@Entity
+@Table(name = "Batch")
 public class Batch {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

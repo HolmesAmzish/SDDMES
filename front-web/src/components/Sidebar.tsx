@@ -9,6 +9,7 @@ import {
   FaWarehouse,
   FaClipboardList,
   FaBox,
+  FaFileAlt,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ export default function Sidebar({ title }: SidebarProps) {
           { label: "物料管理", path: "/item", icon: <FaBox /> },
           { label: "仓库管理", path: "/warehouse", icon: <FaWarehouse /> },
           { label: "材料单(BOM)", path: "/bom", icon: <FaClipboardList /> },
+          { label: "工单管理", path: "/workorder", icon: <FaFileAlt /> },
           { label: "电子看板", path: "/dashboard", icon: <FaTachometerAlt /> },
         ]
       },

@@ -10,6 +10,7 @@ import Setting from "./pages/Setting";
 import ItemPage from "./pages/ItemPage.tsx";
 import WarehousePage from "./pages/WarehousePage.tsx";
 import BomPage from "./pages/BomPage.tsx";
+import WorkOrderPage from "./pages/WorkOrderPage.tsx";
 import AgentChatWindow from "./components/AgentChatWindow.tsx";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/settings" element={<Setting />} />
                     <Route path="/warehouse" element={<WarehousePage />} />
                     <Route path="/bom" element={<BomPage />} />
+                    <Route path="/workorder" element={<WorkOrderPage />} />
                 </Routes>
             </Router>
             <AgentChatWindow />

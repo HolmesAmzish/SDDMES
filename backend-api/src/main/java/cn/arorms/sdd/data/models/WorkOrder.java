@@ -1,5 +1,6 @@
 package cn.arorms.sdd.data.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.property.access.spi.Getter;
 
@@ -18,12 +19,14 @@ public class WorkOrder {
     private double productionQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_item_id", nullable = false)
-    private Item productItem;
+    @JoinColumn(name = "bom_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Bom bom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bom_id", nullable = false)
-    private Bom bom;
+    @JoinColumn(name = "product_item_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Item productItem;
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Batch> batches;
@@ -97,5 +100,10 @@ public class WorkOrder {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }

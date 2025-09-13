@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity @Table(name = "boms")
+@Entity
+@Table(name = "boms")
 public class Bom {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

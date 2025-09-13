@@ -9,7 +9,8 @@ import cn.arorms.sdd.data.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity @Table(name = "users")
+@Entity
+@Table(name = "users")
 public class User implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

@@ -47,13 +47,14 @@ public class ChatClientConfig {
     }
     @Bean
     public ChatClient defaultChatClient(
-//            ToolCallbackProvider tools,
+            ToolCallbackProvider tools,
             ChatMemory chatMemory,
             @Qualifier("defaultChatModel") OpenAiChatModel defaultChatModel
     ) {
         return ChatClient.builder(defaultChatModel)
-//                .defaultToolCallbacks(tools)
+                .defaultToolCallbacks(tools)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                .defaultSystem("你是一名生产制造执行系统（MES）助手，帮助用户分析生产系统数据和协助管理。")
                 .build();
     }
 }

@@ -5,6 +5,8 @@ import cn.arorms.sdd.data.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -18,6 +20,18 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    public void delete(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public void add(User user) {
+        userRepository.save(user);
     }
 
     public User registerUser(String username, String email, String rawPassword) {

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "fraudbase-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/cacc/Repositories/SDDMES/mcp-server",
+        "run",
+        "main.py"
+      ]
+    }
+  }
+}
