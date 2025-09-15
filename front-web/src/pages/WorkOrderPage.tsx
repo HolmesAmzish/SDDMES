@@ -28,6 +28,7 @@ interface WorkOrder {
     id?: number;
     username?: string;
   };
+  status?: string;
 }
 
 export default function WorkOrderPage() {
@@ -40,7 +41,8 @@ export default function WorkOrderPage() {
     workOrderNo: "",
     productionQuantity: 1,
     productItem: { name: "", description: "", itemType: "", unit: "" },
-    bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 }
+    bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 },
+    status: "PENDING"
   });
 
   useEffect(() => {
@@ -83,7 +85,8 @@ export default function WorkOrderPage() {
         workOrderNo: "",
         productionQuantity: 1,
         productItem: { name: "", description: "", itemType: "", unit: "" },
-        bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 }
+        bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 },
+        status: "PENDING"
       });
       setShowAddForm(false);
       fetchWorkOrders();
@@ -91,6 +94,55 @@ export default function WorkOrderPage() {
     } catch (error) {
       console.error("添加工单失败:", error);
       alert("添加工单失败!");
+    }
+  };
+
+  const handleDeleteWorkOrder = async (id: number) => {
+    if (!confirm("确定要删除这个工单吗？")) return;
+    
+    try {
+      await axios.post("http://localhost:8080/api/workorder/delete", null, {
+        params: { id }
+      });
+      fetchWorkOrders();
+      alert("工单删除成功!");
+    } catch (error) {
+      console.error("删除工单失败:", error);
+      alert("删除工单失败!");
+    }
+  };
+
+  const handleUpdateWorkOrder = async () => {
+    try {
+      await axios.post("http://localhost:8080/api/workorder/update", newWorkOrder);
+      setNewWorkOrder({
+        workOrderNo: "",
+        productionQuantity: 1,
+        productItem: { name: "", description: "", itemType: "", unit: "" },
+        bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 },
+        status: "PENDING"
+      });
+      setShowAddForm(false);
+      fetchWorkOrders();
+      alert("工单更新成功!");
+    } catch (error) {
+      console.error("更新工单失败:", error);
+      alert("更新工单失败!");
+    }
+  };
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      const workOrderToUpdate = workOrders.find(wo => wo.id === id);
+      if (!workOrderToUpdate) return;
+      
+      const updatedWorkOrder = { ...workOrderToUpdate, status: newStatus };
+      await axios.post("http://localhost:8080/api/workorder/update", updatedWorkOrder);
+      fetchWorkOrders();
+      alert("状态更新成功!");
+    } catch (error) {
+      console.error("状态更新失败:", error);
+      alert("状态更新失败!");
     }
   };
 
@@ -265,6 +317,12 @@ export default function WorkOrderPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     创建人
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    状态
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    操作
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -290,6 +348,37 @@ export default function WorkOrderPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {workOrder.creator?.username || '系统'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <select
+                        value={workOrder.status || 'PENDING'}
+                        onChange={(e) => handleStatusChange(workOrder.id!, e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="PENDING">待处理</option>
+                        <option value="IN_PROGRESS">进行中</option>
+                        <option value="COMPLETED">已完成</option>
+                        <option value="CANCELLED">已取消</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleDeleteWorkOrder(workOrder.id!)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          删除
+                        </button>
+                        <button
+                          onClick={() => {
+                            setNewWorkOrder(workOrder);
+                            setShowAddForm(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          编辑
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -1,3 +1,9 @@
+v3.0.0 2025-09-14
+1. 重构前端，分为基于 electron 的 app 和基于 react 的 web。
+2. 重构数据库，使用 Spring Data JPA + PostgreSQL。
+3. 加入 LLM API 调用和 MCP 工具自动化。
+
+
 2025-04-13
 1. 后端添加通过标签组成字符串进行标签内容查询
 

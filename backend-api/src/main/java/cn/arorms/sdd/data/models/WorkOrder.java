@@ -1,5 +1,6 @@
 package cn.arorms.sdd.data.models;
 
+import cn.arorms.sdd.data.enums.ProcessStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.property.access.spi.Getter;
@@ -37,6 +38,10 @@ public class WorkOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User creator;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ProcessStatus status;
 
     public Long getId() {
         return id;
@@ -105,5 +110,6 @@ public class WorkOrder {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.status = ProcessStatus.PENDING;
     }
 }

@@ -17,9 +17,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User getUserByUsername(String username) {
+    public User getByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    public User getById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
     }
 
     public List<User> getAll() {
@@ -34,7 +39,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User registerUser(String username, String email, String rawPassword) {
+    public void update(User user) {
+        userRepository.save(user);
+    }
+
+    public User register(String username, String email, String rawPassword) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username is already in use.");
         }

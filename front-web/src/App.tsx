@@ -11,7 +11,9 @@ import ItemPage from "./pages/ItemPage.tsx";
 import WarehousePage from "./pages/WarehousePage.tsx";
 import BomPage from "./pages/BomPage.tsx";
 import WorkOrderPage from "./pages/WorkOrderPage.tsx";
+import DataVisualizationPage from "./pages/DataVisualizationPage.tsx";
 import AgentChatWindow from "./components/AgentChatWindow.tsx";
+import RegisterPage from "./pages/Register.tsx";
 
 function App() {
     return (
@@ -29,6 +31,8 @@ function App() {
                     <Route path="/warehouse" element={<WarehousePage />} />
                     <Route path="/bom" element={<BomPage />} />
                     <Route path="/workorder" element={<WorkOrderPage />} />
+                    <Route path="/visualization" element={<DataVisualizationPage />} />
+                    <Route path="/register" element={<RegisterPage/>} />
                 </Routes>
             </Router>
             <AgentChatWindow />

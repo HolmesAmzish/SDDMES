@@ -10,6 +10,7 @@ import {
   FaClipboardList,
   FaBox,
   FaFileAlt,
+  FaChartBar,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -36,6 +37,7 @@ export default function Sidebar({ title }: SidebarProps) {
         items: [
           { label: "缺陷检测", path: "/detection", icon: <FaBug /> },
           { label: "检测数据", path: "/data", icon: <FaIndustry /> },
+          { label: "数据可视化", path: "/visualization", icon: <FaChartBar /> },
         ]
       },
       {
@@ -48,7 +50,7 @@ export default function Sidebar({ title }: SidebarProps) {
     ];
 
     return (
-        <aside className="sticky top-0 w-64 bg-gray-50 h-screen p-4 flex flex-col overflow-y-auto">
+        <aside className="sticky top-0 w-64 bg-gray-50 h-screen p-4 flex flex-col overflow-y-auto border-r border-gray-200">
             {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
             <nav className="flex flex-col gap-6">
                 {groups.map((group, groupIndex) => (

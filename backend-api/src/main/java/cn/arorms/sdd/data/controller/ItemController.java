@@ -19,18 +19,25 @@ public class ItemController {
 
     @RequestMapping("/get")
     public List<Item> getAllItems() {
-        return itemService.getAllItems();
+        return itemService.getAll();
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addItem(@RequestBody Item item) {
-        itemService.addItem(item);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> addItem(@RequestBody Item item) {
+        itemService.add(item);
+        return ResponseEntity.ok("Item added successfully");
+
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Long> deleteItem(@RequestParam Long id) {
-        itemService.deleteItem(id);
-        return ResponseEntity.ok(id);
+    public ResponseEntity<String> deleteItem(@RequestParam Long id) {
+        itemService.delete(id);
+        return ResponseEntity.ok("Item deleted successfully");
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateItem(@RequestBody Item item) {
+        itemService.update(item);
+        return ResponseEntity.ok("Item updated successfully");
     }
 }

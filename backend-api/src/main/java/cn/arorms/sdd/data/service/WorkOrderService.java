@@ -19,6 +19,10 @@ public class WorkOrderService {
         workOrderRepository.save(workOrder);
     }
 
+    public void update(WorkOrder workOrder) {
+        workOrderRepository.save(workOrder);
+    }
+
     public Page<WorkOrder> getAllByPage(Pageable pageable) {
         return workOrderRepository.findAll(pageable);
     }
@@ -26,4 +30,9 @@ public class WorkOrderService {
     public List<WorkOrder> getAll() {
         return workOrderRepository.findAll();
     }
+
+    public void deleteById(Long id) {
+        workOrderRepository.deleteById(id);
+    }
+
 }

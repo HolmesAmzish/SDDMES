@@ -19,6 +19,7 @@ interface DefectResult {
 export default function DetectionProcessPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [results, setResults] = useState<DefectResult[]>([]);
+  const [selectedResult, setSelectedResult] = useState<DefectResult | null>(null);
   const [loading, setLoading] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -74,21 +75,19 @@ export default function DetectionProcessPage() {
     if (results.length === 0) return alert("没有检测结果可保存");
     
     try {
-      // 保存每个检测结果到后端并获取保存后的数据
-      const savedResults: DefectResult[] = [];
+      // 保存每个检测结果到后端
       for (const result of results) {
-
-        const response = await axios.post<DefectResult>(
+        await axios.post<DefectResult>(
           "http://localhost:8080/api/detection/add", 
           result,
           { headers: { "Content-Type": "application/json" } }
         );
-        savedResults.push(response.data);
       }
       
-      // 更新前端状态为保存后的结果（包含ID和可能的其他后端生成字段）
-      setResults(savedResults);
-      alert("保存成功！结果已更新到前端列表");
+      // 保存成功后清空结果列表和选中结果
+      setResults([]);
+      setSelectedResult(null);
+      alert("保存成功！结果已清空");
     } catch (err) {
       console.error("保存失败:", err);
       alert("保存失败，请检查后端服务是否正常运行");
@@ -131,19 +130,35 @@ export default function DetectionProcessPage() {
                   <h2 className="text-xl font-semibold mb-4 text-gray-700">
                     检测结果预览
                   </h2>
-                  <div className="flex justify-center items-center rounded p-4">
-                    <img
-                      src={
-                        selectedFiles[0]
-                          ? URL.createObjectURL(selectedFiles[0])
-                          : placeholder
-                      }
-                      alt="检测结果"
-                      className="max-w-full max-h-72 object-contain"
-                    />
+                  <div className="flex flex-col items-center">
+                    <div className="flex justify-center items-center rounded p-4 w-full">
+                      <img
+                        src={
+                          selectedResult?.resultFigure
+                            ? `data:image/png;base64,${selectedResult.resultFigure}`
+                            : selectedFiles[0]
+                            ? URL.createObjectURL(selectedFiles[0])
+                            : placeholder
+                        }
+                        alt="检测结果"
+                        className="max-w-full max-h-72 object-contain"
+                      />
+                    </div>
+                    {selectedResult && (
+                      <button
+                        onClick={() => setSelectedResult(null)}
+                        className="mt-2 px-4 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-sm"
+                      >
+                        清除选择
+                      </button>
+                    )}
                   </div>
                   <p className="mx-4">
-                    {loading ? "正在等待检测结果..." : "等待检测结果"}
+                    {selectedResult
+                      ? `查看结果: ${selectedResult.detectConfidences}`
+                      : loading
+                      ? "正在等待检测结果..."
+                      : "等待检测结果或选择具体结果查看"}
                   </p>
                 </div>
 
@@ -172,7 +187,13 @@ export default function DetectionProcessPage() {
                       </thead>
                       <tbody className="bg-gray-50 divide-y divide-gray-200">
                         {results.map((item) => (
-                          <tr key={item.id}>
+                          <tr 
+                            key={item.id}
+                            onClick={() => setSelectedResult(item)}
+                            className={`cursor-pointer hover:bg-gray-100 ${
+                              selectedResult?.id === item.id ? 'bg-white' : ''
+                            }`}
+                          >
                             <td className="px-4 py-2">
                               {item.detectConfidences}
                             </td>

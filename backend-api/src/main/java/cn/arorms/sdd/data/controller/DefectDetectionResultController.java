@@ -1,5 +1,6 @@
 package cn.arorms.sdd.data.controller;
 
+import cn.arorms.sdd.data.dtos.DetectionResultVisionData;
 import cn.arorms.sdd.data.models.DefectDetectionResult;
 import cn.arorms.sdd.data.service.DefectDetectionResultService;
 import org.springframework.data.domain.Page;
@@ -55,5 +56,13 @@ public class DefectDetectionResultController {
                 hasInclusion, hasPatch, hasScratch, hasOther,
                 pageable
         );
+    }
+
+    /**
+     * 获取可视化数据
+     */
+    @GetMapping("/visualization")
+    public DetectionResultVisionData getVisualizationData() {
+        return service.getVisualizationData();
     }
 }

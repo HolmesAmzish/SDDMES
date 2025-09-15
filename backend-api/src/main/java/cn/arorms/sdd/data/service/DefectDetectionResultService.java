@@ -1,6 +1,7 @@
 package cn.arorms.sdd.data.service;
 
 import cn.arorms.sdd.data.controller.AuthController;
+import cn.arorms.sdd.data.dtos.DetectionResultVisionData;
 import cn.arorms.sdd.data.models.DefectDetectionResult;
 import cn.arorms.sdd.data.repository.DefectDetectionResultRepository;
 import org.slf4j.Logger;
@@ -11,6 +12,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Service for managing defect detection results.
@@ -75,4 +80,56 @@ public class DefectDetectionResultService {
         System.out.println("Queried results: " + result);
         return result;
     }
+
+    public DetectionResultVisionData getVisualizationData() {
+        DetectionResultVisionData visionData = new DetectionResultVisionData();
+        
+        // Get defect type counts
+        Map<String, Long> defectTypeCounts = repository.countDefectTypes();
+        visionData.setDefectTypeCounts(defectTypeCounts);
+        
+        // Get time distribution
+        List<Object[]> timeDistribution = repository.countTimeDistribution();
+        Map<String, Long> timeDistMap = new HashMap<>();
+        for (Object[] result : timeDistribution) {
+            timeDistMap.put((String) result[0], (Long) result[1]);
+        }
+        visionData.setTimeDistribution(timeDistMap);
+        
+        // Get defect number distribution
+        List<Object[]> defectNumberDistribution = repository.countDefectNumberDistribution();
+        Map<Integer, Long> defectNumDistMap = new HashMap<>();
+        for (Object[] result : defectNumberDistribution) {
+            defectNumDistMap.put((Integer) result[0], (Long) result[1]);
+        }
+        visionData.setDefectNumberDistribution(defectNumDistMap);
+        
+        // Get daily detection counts for last 15 days
+        LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
+        List<Object[]> dailyDetections = repository.countDailyDetections(fifteenDaysAgo);
+        List<DetectionResultVisionData.DailyDetectionCount> dailyCounts = dailyDetections.stream()
+            .map(result -> new DetectionResultVisionData.DailyDetectionCount(
+                result[0].toString(), 
+                (Long) result[1]
+            ))
+            .collect(Collectors.toList());
+        visionData.setDailyDetectionCounts(dailyCounts);
+        
+        // Get recent defect summaries for last 15 days
+        List<Object[]> recentDefects = repository.summarizeRecentDefects(fifteenDaysAgo);
+        List<DetectionResultVisionData.DefectSummary> defectSummaries = recentDefects.stream()
+            .map(result -> new DetectionResultVisionData.DefectSummary(
+                result[0].toString(),
+                (Long) result[1],
+                (Long) result[2],
+                (Long) result[3],
+                (Long) result[4],
+                (Long) result[5]
+            ))
+            .collect(Collectors.toList());
+        visionData.setRecentDefectSummaries(defectSummaries);
+        
+        return visionData;
+    }
+
 }

@@ -26,6 +26,8 @@ export default function DetectionResultPage() {
   const [results, setResults] = useState<DefectDetectionResult[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedResult, setSelectedResult] = useState<DefectDetectionResult | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   // 过滤条件
   const [keyword, setKeyword] = useState("");
@@ -74,6 +76,16 @@ export default function DetectionResultPage() {
     setHasScratch(false);
     setHasOther(false);
     fetchData(0);
+  };
+
+  const handleRowDoubleClick = (item: DefectDetectionResult) => {
+    setSelectedResult(item);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedResult(null);
   };
 
   return (
@@ -181,7 +193,8 @@ export default function DetectionResultPage() {
                     results.map((item, index) => (
                       <tr
                         key={`${item.id}-${index}`}
-                        className="border-b border-gray-200"
+                        className="border-b border-gray-200 cursor-pointer hover:bg-gray-50"
+                        onDoubleClick={() => handleRowDoubleClick(item)}
                       >
                         <td className="py-2 px-4 text-center">{item.id}</td>
                         <td className="py-2 px-4 text-center">
@@ -259,6 +272,32 @@ export default function DetectionResultPage() {
             </div>
           </div>
         </div>
+
+        {/* Result Figure Modal */}
+        {showModal && selectedResult && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-4xl max-h-full overflow-auto">
+              <h3 className="text-xl font-semibold mb-4">检测结果图 - ID: {selectedResult.id}</h3>
+              {selectedResult.resultFigure ? (
+                <img
+                  src={`data:image/png;base64,${selectedResult.resultFigure}`}
+                  alt="检测结果图"
+                  className="max-w-full max-h-96 object-contain"
+                />
+              ) : (
+                <p className="text-gray-500">无结果图可用</p>
+              )}
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                >
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

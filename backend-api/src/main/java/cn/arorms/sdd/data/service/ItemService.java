@@ -17,20 +17,24 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    public void addItem(Item item) {
+    public void add(Item item) {
         itemRepository.save(item);
     }
 
-    public Item getItemById(Long id) {
+    public Item getById(Long id) {
         return itemRepository.findById(id).orElse(null);
     }
 
-    public void deleteItem(Long id) {
+    public void delete(Long id) {
         itemRepository.deleteById(id);
     }
 
-    public List<Item> getAllItems() {
+    public List<Item> getAll() {
         return itemRepository.findAll();
+    }
+
+    public void update(Item item) {
+        itemRepository.save(item);
     }
 
 }

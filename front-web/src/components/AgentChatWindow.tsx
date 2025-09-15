@@ -180,7 +180,7 @@ const AgentChatWindow: React.FC = () => {
       {isOpen && (
         <div
           ref={chatWindowRef}
-          className="fixed w-96 h-120 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col z-50"
+          className="fixed w-120 h-160 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col z-50"
           style={{ left: `${position.x}px`, top: `${position.y}px` }}
           onMouseDown={handleMouseDown}
         >

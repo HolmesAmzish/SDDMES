@@ -37,7 +37,7 @@ public class AuthController {
         String username = request.getUsername();
         log.info("login user: {}", username);
 
-        User user = userService.getUserByUsername(username);
+        User user = userService.getByUsername(username);
         if (!passwordMatches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
@@ -54,7 +54,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        User user = userService.registerUser(
+        User user = userService.register(
                 request.getUsername(),
                 request.getEmail(),
                 request.getPassword()
