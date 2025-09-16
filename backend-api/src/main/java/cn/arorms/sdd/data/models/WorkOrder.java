@@ -2,6 +2,7 @@ package cn.arorms.sdd.data.models;
 
 import cn.arorms.sdd.data.enums.ProcessStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.property.access.spi.Getter;
 
@@ -30,13 +31,14 @@ public class WorkOrder {
     private Item productItem;
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Batch> batches;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "creator_id")
     private User creator;
 
     @Enumerated(EnumType.STRING)
@@ -107,8 +109,18 @@ public class WorkOrder {
         this.creator = creator;
     }
 
+    public ProcessStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProcessStatus status) {
+        this.status = status;
+    }
+
     @PrePersist
     protected void onCreate() {
+        if (this.workOrderNo == null || this.workOrderNo.isEmpty())
+            this.workOrderNo = "WO-" + System.currentTimeMillis();
         this.createdAt = LocalDateTime.now();
         this.status = ProcessStatus.PENDING;
     }

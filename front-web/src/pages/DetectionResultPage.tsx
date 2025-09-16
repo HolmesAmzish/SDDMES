@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
@@ -86,6 +86,36 @@ export default function DetectionResultPage() {
   const closeModal = () => {
     setShowModal(false);
     setSelectedResult(null);
+  };
+
+  // Define colors for each defect type
+  const defectColors: { [key: string]: string } = {
+    '夹杂物': 'rgba(255, 99, 132, 0.6)',
+    '补丁': 'rgba(54, 162, 235, 0.6)',
+    '划痕': 'rgba(255, 206, 86, 0.6)',
+    '其他': 'rgba(75, 192, 192, 0.6)'
+  };
+
+  /** 格式化标签 - 返回JSX元素 */
+  const FormatLabels: React.FC<{ item: DefectDetectionResult }> = ({ item }) => {
+    const labels = [
+      item.hasInclusion && "夹杂物",
+      item.hasPatch && "补丁",
+      item.hasScratch && "划痕",
+      item.hasOther && "其他",
+    ].filter(Boolean) as string[];
+    
+    return (
+      <>
+        {labels.map((label, index) => (
+          <span key={index} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginRight: '5px' }}>
+            <span style={{ width: '10px', height: '10px', backgroundColor: defectColors[label], borderRadius: '50%', display: 'inline-block' }}></span>
+            {label}
+            {index < labels.length - 1 && '，'}
+          </span>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -225,14 +255,7 @@ export default function DetectionResultPage() {
                         </td>
 
                         <td className="py-2 px-4 text-center">
-                          {[
-                            item.hasInclusion && "夹杂物",
-                            item.hasPatch && "补丁",
-                            item.hasScratch && "划痕",
-                            item.hasOther && "其他",
-                          ]
-                            .filter(Boolean)
-                            .join("，")}
+                          <FormatLabels item={item} />
                         </td>
                         <td className="py-2 px-4 text-center">
                           {item.defectNumber}

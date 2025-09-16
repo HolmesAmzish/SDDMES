@@ -53,7 +53,7 @@ export default function WorkOrderPage() {
 
   const fetchWorkOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/workorder/get");
+      const response = await axios.get("api/workorder/get");
       setWorkOrders(response.data);
     } catch (error) {
       console.error("获取工单列表失败:", error);
@@ -62,7 +62,7 @@ export default function WorkOrderPage() {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/item/get");
+      const response = await axios.get("api/item/get");
       setItems(response.data);
     } catch (error) {
       console.error("获取物料列表失败:", error);
@@ -71,7 +71,7 @@ export default function WorkOrderPage() {
 
   const fetchBoms = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/boms");
+      const response = await axios.get("api/boms");
       setBoms(response.data);
     } catch (error) {
       console.error("获取BOM列表失败:", error);
@@ -80,13 +80,12 @@ export default function WorkOrderPage() {
 
   const handleAddWorkOrder = async () => {
     try {
-      await axios.post("http://localhost:8080/api/workorder/add", newWorkOrder);
+      await axios.post("api/workorder/add", newWorkOrder);
       setNewWorkOrder({
         workOrderNo: "",
         productionQuantity: 1,
         productItem: { name: "", description: "", itemType: "", unit: "" },
         bom: { productItem: { name: "", description: "", itemType: "", unit: "" }, quantity: 1 },
-        status: "PENDING"
       });
       setShowAddForm(false);
       fetchWorkOrders();
@@ -101,7 +100,7 @@ export default function WorkOrderPage() {
     if (!confirm("确定要删除这个工单吗？")) return;
     
     try {
-      await axios.post("http://localhost:8080/api/workorder/delete", null, {
+      await axios.post("api/workorder/delete", null, {
         params: { id }
       });
       fetchWorkOrders();
@@ -114,7 +113,7 @@ export default function WorkOrderPage() {
 
   const handleUpdateWorkOrder = async () => {
     try {
-      await axios.post("http://localhost:8080/api/workorder/update", newWorkOrder);
+      await axios.post("api/workorder/update", newWorkOrder);
       setNewWorkOrder({
         workOrderNo: "",
         productionQuantity: 1,
@@ -133,11 +132,9 @@ export default function WorkOrderPage() {
 
   const handleStatusChange = async (id: number, newStatus: string) => {
     try {
-      const workOrderToUpdate = workOrders.find(wo => wo.id === id);
-      if (!workOrderToUpdate) return;
-      
-      const updatedWorkOrder = { ...workOrderToUpdate, status: newStatus };
-      await axios.post("http://localhost:8080/api/workorder/update", updatedWorkOrder);
+      await axios.post("api/workorder/updateStatus", null, {
+        params: { id, status: newStatus }
+      });
       fetchWorkOrders();
       alert("状态更新成功!");
     } catch (error) {
@@ -283,7 +280,7 @@ export default function WorkOrderPage() {
                 <button
                   onClick={handleAddWorkOrder}
                   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                  disabled={!newWorkOrder.workOrderNo || newWorkOrder.productionQuantity <= 0 || !newWorkOrder.productItem.id || !newWorkOrder.bom.id}
+                  disabled={newWorkOrder.productionQuantity <= 0 || !newWorkOrder.productItem.id || !newWorkOrder.bom.id}
                 >
                   保存
                 </button>

@@ -49,6 +49,14 @@ export default function DataVisualizationPage() {
   const renderCharts = () => {
     if (!data) return;
 
+    // Define colors for each defect type
+    const defectColors: { [key: string]: string } = {
+      'inclusion': 'rgba(255, 99, 132, 0.6)',
+      'patch': 'rgba(54, 162, 235, 0.6)',
+      'scratch': 'rgba(255, 206, 86, 0.6)',
+      'other': 'rgba(75, 192, 192, 0.6)'
+    };
+
     // Defect Type Pie Chart
     const defectTypeChart = echarts.init(document.getElementById('defect-type-chart')!);
     defectTypeChart.setOption({
@@ -62,7 +70,8 @@ export default function DataVisualizationPage() {
           value,
           name: name === 'inclusion' ? '夹杂物' : 
                 name === 'patch' ? '补丁' : 
-                name === 'scratch' ? '划痕' : '其他'
+                name === 'scratch' ? '划痕' : '其他',
+          itemStyle: { color: defectColors[name] }
         })),
         emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
       }]
@@ -77,11 +86,12 @@ export default function DataVisualizationPage() {
       yAxis: { type: 'value' },
       series: [{
         data: Object.values(data.timeDistribution),
-        type: 'bar'
+        type: 'bar',
+        itemStyle: { color: 'rgba(54, 162, 235, 0.7)' }
       }]
     });
 
-    // Defect Number Distribution Chart
+    // Defect Number Distribution Chart - Changed to bar chart
     const defectNumChart = echarts.init(document.getElementById('defect-num-chart')!);
     defectNumChart.setOption({
       title: { text: '缺陷数量分布', left: 'center' },
@@ -90,11 +100,12 @@ export default function DataVisualizationPage() {
       yAxis: { type: 'value' },
       series: [{
         data: Object.values(data.defectNumberDistribution),
-        type: 'line'
+        type: 'bar',
+        itemStyle: { color: 'rgba(255, 206, 86, 0.7)' }
       }]
     });
 
-    // Daily Detection Count Chart
+    // Daily Detection Count Chart - Changed to line chart
     const dailyChart = echarts.init(document.getElementById('daily-chart')!);
     dailyChart.setOption({
       title: { text: '最近15天检测量', left: 'center' },
@@ -103,7 +114,9 @@ export default function DataVisualizationPage() {
       yAxis: { type: 'value' },
       series: [{
         data: data.dailyDetectionCounts.map(d => d.count),
-        type: 'bar'
+        type: 'line',
+        lineStyle: { color: 'rgba(153, 102, 255, 1)' },
+        areaStyle: { color: 'rgba(153, 102, 255, 0.2)' }
       }]
     });
 
@@ -116,11 +129,36 @@ export default function DataVisualizationPage() {
       xAxis: { type: 'category', data: data.recentDefectSummaries.map(d => d.date) },
       yAxis: { type: 'value' },
       series: [
-        { name: '总缺陷数', type: 'line', data: data.recentDefectSummaries.map(d => d.totalDefects) },
-        { name: '夹杂物', type: 'line', data: data.recentDefectSummaries.map(d => d.inclusionCount) },
-        { name: '补丁', type: 'line', data: data.recentDefectSummaries.map(d => d.patchCount) },
-        { name: '划痕', type: 'line', data: data.recentDefectSummaries.map(d => d.scratchCount) },
-        { name: '其他', type: 'line', data: data.recentDefectSummaries.map(d => d.otherCount) }
+        { 
+          name: '总缺陷数', 
+          type: 'line', 
+          data: data.recentDefectSummaries.map(d => d.totalDefects),
+          lineStyle: { color: 'rgba(255, 99, 132, 1)' }
+        },
+        { 
+          name: '夹杂物', 
+          type: 'line', 
+          data: data.recentDefectSummaries.map(d => d.inclusionCount),
+          lineStyle: { color: defectColors['inclusion'] }
+        },
+        { 
+          name: '补丁', 
+          type: 'line', 
+          data: data.recentDefectSummaries.map(d => d.patchCount),
+          lineStyle: { color: defectColors['patch'] }
+        },
+        { 
+          name: '划痕', 
+          type: 'line', 
+          data: data.recentDefectSummaries.map(d => d.scratchCount),
+          lineStyle: { color: defectColors['scratch'] }
+        },
+        { 
+          name: '其他', 
+          type: 'line', 
+          data: data.recentDefectSummaries.map(d => d.otherCount),
+          lineStyle: { color: defectColors['other'] }
+        }
       ]
     });
   };

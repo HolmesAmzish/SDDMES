@@ -45,3 +45,7 @@ curl -X GET http://localhost:8080/api/workorder/get \
   -H "Content-Type: application/json"
 
 echo -e "\n\n=== Work Order API Test Completed ==="
+
+
+curl -X GET http://localhost:8080/api/workorder/getStatuses
+  -H "Content-Type: application/json"

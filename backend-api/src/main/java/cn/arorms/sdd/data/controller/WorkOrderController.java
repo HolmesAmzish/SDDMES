@@ -1,9 +1,10 @@
 package cn.arorms.sdd.data.controller;
 
+import cn.arorms.sdd.data.dtos.WorkOrderStatus;
 import cn.arorms.sdd.data.models.WorkOrder;
-import cn.arorms.sdd.data.repository.WorkOrderRepository;
 import cn.arorms.sdd.data.service.WorkOrderService;
-import org.hibernate.jdbc.Work;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/workorder")
 public class WorkOrderController {
-    private WorkOrderService workOrderService;
+    private final WorkOrderService workOrderService;
+
     public WorkOrderController(WorkOrderService workOrderService) {
         this.workOrderService = workOrderService;
     }
@@ -38,5 +40,16 @@ public class WorkOrderController {
     public ResponseEntity<String> updateWorkOrder(@RequestBody WorkOrder workOrder) {
         workOrderService.update(workOrder);
         return ResponseEntity.ok("Work order updated successfully");
+    }
+
+    @PostMapping("/updateStatus")
+    public ResponseEntity<String> updateWorkOrderStatus(@RequestParam Long id, @RequestParam String status) {
+        workOrderService.updateStatus(id, status);
+        return ResponseEntity.ok("Work order status updated successfully");
+    }
+
+    @GetMapping("/getStatuses")
+    public Page<WorkOrderStatus> getWorkOrderStatuses(Pageable pageable) {
+        return workOrderService.getAllStatuses(pageable);
     }
 }
