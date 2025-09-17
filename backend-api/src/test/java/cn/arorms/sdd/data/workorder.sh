@@ -14,8 +14,7 @@ echo -e "\n\n2. Adding a new work order:"
 curl -X POST http://localhost:8080/api/workorder/add \
   -H "Content-Type: application/json" \
   -d '{
-    "workOrderNo": "WO-2024-001",
-    "productionQuantity": 100.5,
+    "productionQuantity": 10,
     "productItem": {
       "id": 1
     },

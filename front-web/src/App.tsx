@@ -14,13 +14,14 @@ import WorkOrderPage from "./pages/WorkOrderPage.tsx";
 import DataVisualizationPage from "./pages/DataVisualizationPage.tsx";
 import AgentChatWindow from "./components/AgentChatWindow.tsx";
 import RegisterPage from "./pages/Register.tsx";
+import NotificationPage from "./pages/NotificationPage.tsx";
 
 function App() {
     return (
         <>
             <Router>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<About />} />
                     <Route path="/item" element={<ItemPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/detection" element={<DetectionProcessPage />} />
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/workorder" element={<WorkOrderPage />} />
                     <Route path="/visualization" element={<DataVisualizationPage />} />
                     <Route path="/register" element={<RegisterPage/>} />
+                    <Route path="/notification" element={<NotificationPage/>} />
                 </Routes>
             </Router>
             <AgentChatWindow />

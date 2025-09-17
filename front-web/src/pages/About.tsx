@@ -28,7 +28,7 @@ export default function About() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
             {/* 内容 */}
             <div className="relative z-10 max-w-3xl px-4">
-              <h1 className="text-4xl font-bold mb-4">SDDMES · 智能钢铁制造</h1>
+              <h1 className="text-4xl font-bold mb-4">零部件缺陷检测与生产管理智能一体化平台</h1>
               <p className="text-lg leading-relaxed text-gray-200">
                 结合机器学习与图像分割的缺陷检测，驱动生产制造系统的智能化与高效化
               </p>
@@ -45,13 +45,14 @@ export default function About() {
               {/* 卡片网格 */}
               <div className="grid md:grid-cols-3 gap-8">
                 {/* 卡片 1 */}
+                <a href="/notification">
                 <div className="bg-white rounded-3xl shadow-lg p-6 transform hover:-translate-y-2 hover:shadow-2xl transition duration-300">
                   <h3 className="text-xl font-semibold mb-3">缺陷检测</h3>
                   <p className="text-gray-600 leading-relaxed">
                     利用深度学习与图像分割模型，实现钢材表面缺陷自动检测与分类，
                     提高检测精度，降低人工成本。
                   </p>
-                </div>
+                </div></a>
 
                 {/* 卡片 2 */}
                 <div className="bg-white rounded-3xl shadow-lg p-6 transform hover:-translate-y-2 hover:shadow-2xl transition duration-300">

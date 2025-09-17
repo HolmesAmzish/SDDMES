@@ -1,7 +1,8 @@
 import Header from "../components/Header.tsx";
 import Sidebar from "../components/Sidebar.tsx";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import * as echarts from 'echarts';
 
 interface Warehouse {
   id?: number;
@@ -10,8 +11,44 @@ interface Warehouse {
   description: string;
 }
 
+interface StockTransaction {
+  id?: number;
+  transactionType: string | null;
+  quantity: number;
+  item: {
+    id: number;
+    name: string;
+    description: string;
+    itemType: string;
+    unit: string;
+  };
+  warehouse: {
+    id: number;
+    warehouseName: string;
+    location: string;
+    description: string;
+  };
+  creator: {
+    id: number;
+    username: string;
+    email: string;
+  };
+  timestamp: string;
+  batch: any;
+}
+
+interface StockChartData {
+  dates: string[];
+  items: {
+    [itemName: string]: number[];
+  };
+}
+
 export default function WarehousePage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [stockTransactions, setStockTransactions] = useState<StockTransaction[]>([]);
+  const [chartData, setChartData] = useState<StockChartData>({ dates: [], items: {} });
+  const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newWarehouse, setNewWarehouse] = useState<Warehouse>({
     warehouseName: "",
@@ -19,10 +56,33 @@ export default function WarehousePage() {
     description: ""
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const chartRef = useRef<HTMLDivElement>(null);
+  const chartInstance = useRef<echarts.ECharts | null>(null);
 
   useEffect(() => {
     fetchWarehouses();
+    fetchStockTransactions();
   }, []);
+
+  useEffect(() => {
+    if (stockTransactions.length > 0) {
+      processChartData();
+    }
+  }, [stockTransactions]);
+
+  useEffect(() => {
+    if (chartRef.current && chartData.dates.length > 0) {
+      renderChart();
+    }
+
+    // Cleanup function to dispose chart instance
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.dispose();
+        chartInstance.current = null;
+      }
+    };
+  }, [chartData]);
 
   const fetchWarehouses = async () => {
     try {
@@ -31,6 +91,119 @@ export default function WarehousePage() {
     } catch (error) {
       console.error("获取仓库列表失败:", error);
     }
+  };
+
+  const fetchStockTransactions = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get<StockTransaction[]>("http://localhost:8080/api/stockTransaction");
+      setStockTransactions(response.data);
+    } catch (error) {
+      console.error("获取库存交易数据失败:", error);
+      alert("获取库存交易数据失败!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processChartData = () => {
+    // Filter only inbound transactions (including null transactionType) and sort by date
+    const inboundTransactions = stockTransactions
+      .filter(t => t.transactionType === 'IN' || t.transactionType === null)
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    // Get unique dates
+    const dates = Array.from(new Set(inboundTransactions.map(t => t.timestamp.split('T')[0]))).sort();
+
+    // Get unique items
+    const items = Array.from(new Set(inboundTransactions.map(t => t.item.name)));
+
+    // Initialize chart data structure
+    const itemsData: { [itemName: string]: number[] } = {};
+    items.forEach(item => {
+      itemsData[item] = new Array(dates.length).fill(0);
+    });
+
+    // Aggregate quantities by date and item
+    inboundTransactions.forEach(transaction => {
+      const date = transaction.timestamp.split('T')[0];
+      const dateIndex = dates.indexOf(date);
+      if (dateIndex !== -1) {
+        itemsData[transaction.item.name][dateIndex] += transaction.quantity;
+      }
+    });
+
+    setChartData({ dates, items: itemsData });
+  };
+
+  const renderChart = () => {
+    if (!chartRef.current) return;
+
+    // Destroy previous chart instance if exists
+    if (chartInstance.current) {
+      chartInstance.current.dispose();
+    }
+
+    chartInstance.current = echarts.init(chartRef.current);
+
+    const series = Object.entries(chartData.items).map(([itemName, quantities], index) => ({
+      name: itemName,
+      type: 'line',
+      data: quantities,
+      smooth: true,
+      lineStyle: {
+        width: 2
+      },
+      symbol: 'circle',
+      symbolSize: 6
+    }));
+
+    const option = {
+      title: {
+        text: '物料入库趋势图',
+        left: 'center',
+        textStyle: {
+          fontSize: 16,
+          fontWeight: 'bold'
+        }
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+            backgroundColor: '#6a7985'
+          }
+        }
+      },
+      legend: {
+        data: Object.keys(chartData.items),
+        top: 30,
+        right: 10
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        top: '80px',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: chartData.dates,
+        axisLabel: {
+          rotate: 45
+        }
+      },
+      yAxis: {
+        type: 'value',
+        name: '入库数量'
+      },
+      series: series
+    };
+
+    chartInstance.current.setOption(option);
   };
 
   const handleAddWarehouse = async () => {
@@ -139,6 +312,18 @@ export default function WarehousePage() {
               </div>
             </div>
           )}
+
+          {/* 物料入库趋势图 */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 className="text-lg font-semibold mb-4">物料入库趋势</h3>
+            {loading ? (
+              <div className="text-center py-8">
+                <p>加载中...</p>
+              </div>
+            ) : (
+              <div ref={chartRef} style={{ height: '400px', width: '100%' }}></div>
+            )}
+          </div>
 
           {/* 仓库列表 */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden">

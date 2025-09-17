@@ -6,12 +6,11 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("sddmes")
 
 @mcp.tool()
-async def add_work_order(work_order_no: str, production_quantity: float, product_item_id: int, bom_id: int):
+async def add_work_order(production_quantity: float, product_item_id: int, bom_id: int):
     """
     Add a new work order to the system.
     
     Args:
-        work_order_no: The work order number (unique identifier)
         production_quantity: The quantity to produce
         product_item_id: The ID of the product item
         bom_id: The ID of the BOM (Bill of Materials)
@@ -21,7 +20,7 @@ async def add_work_order(work_order_no: str, production_quantity: float, product
     """
     # Construct the request payload
     payload = {
-        "workOrderNo": work_order_no,
+        # "workOrderNo": work_order_no,
         "productionQuantity": production_quantity,
         "productItem": {"id": product_item_id},
         "bom": {"id": bom_id}

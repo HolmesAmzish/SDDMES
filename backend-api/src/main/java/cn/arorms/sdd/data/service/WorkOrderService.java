@@ -3,6 +3,7 @@ package cn.arorms.sdd.data.service;
 import cn.arorms.sdd.data.dtos.WorkOrderStatus;
 import cn.arorms.sdd.data.enums.ProcessStatus;
 import cn.arorms.sdd.data.models.WorkOrder;
+import cn.arorms.sdd.data.repository.OperationLogRepository;
 import cn.arorms.sdd.data.repository.WorkOrderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,13 +16,20 @@ import java.util.List;
 public class WorkOrderService {
     private final WorkOrderRepository workOrderRepository;
     private final BatchService batchService;
+    private final OperationLogService operationLogService;
 
-    public WorkOrderService(WorkOrderRepository workOrderRepository, BatchService batchService) {
+    public WorkOrderService(
+            WorkOrderRepository workOrderRepository,
+            BatchService batchService,
+            OperationLogService operationLogService
+    ) {
         this.workOrderRepository = workOrderRepository;
         this.batchService = batchService;
+        this.operationLogService = operationLogService;
     }
 
     public void add(WorkOrder workOrder) {
+        operationLogService.log("系统更新了工单", "/workorder");
         workOrderRepository.save(workOrder);
     }
 

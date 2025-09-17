@@ -20,6 +20,9 @@ public class OperationLog {
     @JoinColumn(name = "operator_id")
     private User operator;
 
+    @Column(name = "action_url")
+    private String actionUrl;
+
     public Long getId() {
         return id;
     }
@@ -50,5 +53,18 @@ public class OperationLog {
 
     public void setOperator(User operator) {
         this.operator = operator;
+    }
+
+    public String getActionUrl() {
+        return actionUrl;
+    }
+
+    public void setActionUrl(String actionUrl) {
+        this.actionUrl = actionUrl;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.timestamp = LocalDateTime.now();
     }
 }
