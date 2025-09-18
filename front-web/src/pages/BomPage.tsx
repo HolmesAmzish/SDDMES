@@ -44,7 +44,7 @@ export default function BomPage() {
 
   const fetchBoms = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/boms");
+      const response = await axios.get("/api/boms");
       setBoms(response.data);
     } catch (error) {
       console.error("获取BOM列表失败:", error);
@@ -53,7 +53,7 @@ export default function BomPage() {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/item/get");
+      const response = await axios.get("/api/item/get");
       setItems(response.data);
     } catch (error) {
       console.error("获取物料列表失败:", error);
@@ -84,7 +84,7 @@ export default function BomPage() {
 
   const handleAddBom = async () => {
     try {
-      await axios.post("http://localhost:8080/api/boms", newBom);
+      await axios.post("/api/boms", newBom);
       setNewBom({
         productItem: { name: "", description: "", itemType: "", unit: "" },
         quantity: 1,
@@ -102,7 +102,7 @@ export default function BomPage() {
   const handleDeleteBom = async (id: number) => {
     if (confirm("确定要删除这个BOM吗？")) {
       try {
-        await axios.delete(`http://localhost:8080/api/boms/${id}`);
+        await axios.delete(`/api/boms/${id}`);
         fetchBoms();
         alert("BOM删除成功!");
       } catch (error) {

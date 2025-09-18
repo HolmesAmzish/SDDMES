@@ -49,7 +49,7 @@ export default function DetectionProcessPage() {
       console.log("开始检测，发送文件数量:", selectedFiles.length);
       
       const res = await axios.post<DefectResult[]>(
-        "http://localhost:5000/api/detect",
+        "/api/detect",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -78,7 +78,7 @@ export default function DetectionProcessPage() {
       // 保存每个检测结果到后端
       for (const result of results) {
         await axios.post<DefectResult>(
-          "http://localhost:8080/api/detection/add", 
+          "/api/detection/add", 
           result,
           { headers: { "Content-Type": "application/json" } }
         );

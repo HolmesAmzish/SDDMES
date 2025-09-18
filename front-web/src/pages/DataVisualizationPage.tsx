@@ -36,7 +36,7 @@ export default function DataVisualizationPage() {
   const fetchData = async () => {
     try {
       const response = await axios.get<VisualizationData>(
-        "http://localhost:8080/api/detection/visualization"
+        "/api/detection/visualization"
       );
       setData(response.data);
     } catch (error) {

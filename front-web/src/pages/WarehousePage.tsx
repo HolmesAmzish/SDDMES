@@ -86,7 +86,7 @@ export default function WarehousePage() {
 
   const fetchWarehouses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/warehouse/get");
+      const response = await axios.get("/api/warehouse/get");
       setWarehouses(response.data);
     } catch (error) {
       console.error("获取仓库列表失败:", error);
@@ -96,7 +96,7 @@ export default function WarehousePage() {
   const fetchStockTransactions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<StockTransaction[]>("http://localhost:8080/api/stockTransaction");
+      const response = await axios.get<StockTransaction[]>("/api/stockTransaction");
       setStockTransactions(response.data);
     } catch (error) {
       console.error("获取库存交易数据失败:", error);
@@ -208,7 +208,7 @@ export default function WarehousePage() {
 
   const handleAddWarehouse = async () => {
     try {
-      await axios.post("http://localhost:8080/api/warehouse/add", newWarehouse);
+      await axios.post("/api/warehouse/add", newWarehouse);
       setNewWarehouse({ warehouseName: "", location: "", description: "" });
       setShowAddForm(false);
       fetchWarehouses(); // 刷新列表

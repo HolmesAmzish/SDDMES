@@ -30,7 +30,7 @@ export default function ItemPage() {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/item/get");
+      const response = await axios.get("/api/item/get");
       setItems(response.data);
     } catch (error) {
       console.error("获取物料列表失败:", error);
@@ -39,7 +39,7 @@ export default function ItemPage() {
 
   const handleAddItem = async () => {
     try {
-      await axios.post("http://localhost:8080/api/item/add", newItem);
+      await axios.post("/api/item/add", newItem);
       setNewItem({ name: "", description: "", itemType: "RAW", unit: "" });
       setShowAddForm(false);
       fetchItems(); // 刷新列表

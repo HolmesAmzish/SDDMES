@@ -189,7 +189,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const response = await axios.get<PageResponse<WorkOrderStatus>>(
-        "http://localhost:8080/api/workorder/getStatuses",
+        "/api/workorder/getStatuses",
         {
           params: {
             page: page,

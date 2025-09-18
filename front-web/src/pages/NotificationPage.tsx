@@ -24,7 +24,7 @@ export default function NotificationPage() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Notification[]>("http://localhost:8080/api/log");
+      const response = await axios.get<Notification[]>("/api/log");
       setNotifications(response.data);
       setError(null);
     } catch (err) {
